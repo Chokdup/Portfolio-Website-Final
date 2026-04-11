@@ -217,6 +217,52 @@ export const projects: Project[] = [
     }
   },
   {
+    id: 9,
+    slug: "green-guardian",
+    title: "GreenGuardian",
+    category: "Dashboard",
+    description: "A plant care management dashboard designed to help plant lovers track watering schedules, monitor plant health, and manage care routines with ease.",
+    tags: ["UI/UX Design", "User Research", "Full Stack Dev"],
+    metrics: "Improved Engagement",
+    image: "/projects/greenguardian-dashboard.png",
+    color: "from-green-600/20 to-emerald-500/20",
+    year: "2024",
+    contributions: ["UI/UX Design", "User Research", "Frontend Development", "Backend Development"],
+    hook: "Making plant care simple and enjoyable through an intuitive dashboard that keeps your plants thriving.",
+    processBreakdown: [
+      "Conducted user research to understand common pain points among plant owners",
+      "Analyzed existing plant care apps to identify usability gaps and opportunities",
+      "Created user personas and journey maps for different plant enthusiast profiles",
+      "Designed a clean, intuitive interface for tracking watering schedules",
+      "Built plant health monitoring features with clear visual indicators",
+      "Developed task scheduling system with reminders and notifications",
+      "Created plant profiles with species information and care requirements",
+      "Implemented FAQ section for common plant care questions",
+      "Built backend integration for seamless data management and user accounts"
+    ],
+    situation: "Plant lovers often struggled to track watering schedules, monitor plant health, and manage plant care routines consistently. Many existing solutions were either too complicated or lacked an organized, user-friendly interface, which made it difficult for users to stay consistent with plant care habits.",
+    action: "I designed and developed GreenGuardian, a plant care management dashboard focused on simplicity, clarity, and engagement. I conducted user research to understand common pain points among plant owners and created a clean, intuitive interface that allowed users to track watering schedules, monitor plant health, and manage plant information efficiently. I worked on UI/UX design, frontend development, and backend integration to deliver a seamless and functional experience.",
+    result: "GreenGuardian made plant care more accessible and organized by providing users with a clear and easy-to-use dashboard. By simplifying plant management tasks and improving usability, the system encouraged consistent plant care habits and improved overall user engagement, supporting my goal of designing intuitive digital experiences that keep users engaged and coming back.",
+    designProcess: [
+      { title: "Research", description: "User interviews with plant enthusiasts to understand care tracking pain points" },
+      { title: "Define", description: "Created user personas and mapped care routines for different plant owner profiles" },
+      { title: "Ideate", description: "Explored multiple dashboard concepts for schedule tracking and plant monitoring" },
+      { title: "Prototype", description: "Built interactive prototypes tested with plant owners for feedback" },
+      { title: "Deliver", description: "Developed full-stack application with frontend and backend integration" }
+    ],
+    mockups: [
+      { src: "/projects/greenguardian-login.png", alt: "GreenGuardian login page", caption: "Welcome login screen with nature-inspired split layout design" },
+      { src: "/projects/greenguardian-dashboard.png", alt: "GreenGuardian main dashboard", caption: "Plant management dashboard with care tasks, schedules, and plant profiles" },
+      { src: "/projects/greenguardian-features.png", alt: "GreenGuardian features section", caption: "Feature highlights: Schedule Tasks, Reminders, and Enhance Plant IQ" },
+      { src: "/projects/greenguardian-landing.png", alt: "GreenGuardian landing page", caption: "Landing page with plant benefits information and FAQ section" }
+    ],
+    testimonial: {
+      quote: "GreenGuardian helped me finally keep track of all my plants. The dashboard is so easy to use, and my plants have never been healthier!",
+      author: "Plant Enthusiast",
+      role: "GreenGuardian User"
+    }
+  },
+  {
     id: 2,
     slug: "fintrack-dashboard",
     title: "FinTrack Dashboard",

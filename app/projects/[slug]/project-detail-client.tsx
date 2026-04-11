@@ -405,8 +405,8 @@ function ProjectDetailContent({ project }: ProjectDetailClientProps) {
                   transition={{ duration: 0.4 }}
                   className={`aspect-[16/10] rounded-3xl bg-gradient-to-br ${project.color} border border-primary/20 overflow-hidden shadow-2xl shadow-primary/10`}
                 >
-                  {/* Check if project is SCAN2DINE, QUBE, NDP, or Q-Less to show actual images */}
-                  {(project.slug === "scan2dine" || project.slug === "qube" || project.slug === "ndp" || project.slug === "q-less") ? (
+                  {/* Check if project has actual mockup images to show */}
+                  {(project.slug === "scan2dine" || project.slug === "qube" || project.slug === "ndp" || project.slug === "q-less" || project.slug === "green-guardian") ? (
                     <div className="absolute inset-0">
                       <Image
                         src={mockup.src}
