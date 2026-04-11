@@ -80,6 +80,53 @@ export const projects: Project[] = [
   },
   {
     id: 1,
+    slug: "qube",
+    title: "QUBE",
+    category: "Mobile Apps",
+    description: "Gamified mobile app designed to boost user engagement and retention through intuitive UX, reward-driven interactions, and habit-forming design patterns.",
+    tags: ["UI/UX Design", "Gamification", "Mobile Dev"],
+    metrics: "Increased Retention",
+    image: "/projects/qube-hero.jpg",
+    color: "from-red-500/20 to-orange-500/20",
+    year: "2026",
+    contributions: ["UI/UX Design", "UX Research", "Gamification", "Frontend Development"],
+    hook: "Turn Cravings into Victories - a gamified mobile experience that makes users want to come back.",
+    processBreakdown: [
+      "Conducted UX research to understand user motivations and pain points",
+      "Analyzed user behavior patterns to identify engagement opportunities",
+      "Designed intuitive onboarding flows with progressive feature introduction",
+      "Created reward-driven interaction systems including Lucky Spin and Scratch cards",
+      "Developed collectibles system with ingredient cards and meal unlocking",
+      "Implemented achievement badges to encourage continued engagement",
+      "Built QR scanning functionality for seamless restaurant integration",
+      "Designed profile system with progress tracking and achievements",
+      "Conducted usability testing to refine gamification mechanics"
+    ],
+    situation: "Users often struggle to stay motivated and engaged with mobile apps over time. Many apps lose users after the initial experience due to unclear onboarding, weak engagement loops, and lack of meaningful interaction. The challenge was to design a mobile experience that felt intuitive, engaging, and habit-forming, encouraging users to return consistently.",
+    action: "I designed and developed QUBE, a mobile app focused on improving user engagement and retention through thoughtful UI/UX and gamification. I conducted UX research to understand user motivations and pain points, then created intuitive flows, clear onboarding, and reward-driven interactions. I implemented gamification elements to make the experience more engaging, while also handling frontend development to ensure a smooth and responsive user experience.",
+    result: "QUBE delivered a more engaging and intuitive mobile experience, improving user motivation and encouraging repeated use. By combining strong UX design with gamification and clean interface patterns, the app helped increase user engagement and retention, aligning with the goal of creating easy-to-use digital products that users enjoy and return to.",
+    designProcess: [
+      { title: "Research", description: "User interviews to understand motivations and engagement pain points" },
+      { title: "Define", description: "Created engagement loops and reward systems based on user psychology" },
+      { title: "Ideate", description: "Explored gamification mechanics including spins, scratches, and collectibles" },
+      { title: "Prototype", description: "Built interactive prototypes for gamification features and flows" },
+      { title: "Deliver", description: "Developed final app with smooth animations and responsive interactions" }
+    ],
+    mockups: [
+      { src: "/projects/qube-onboarding.jpg", alt: "QUBE onboarding screens", caption: "Welcome flow with clear value proposition and easy sign-up" },
+      { src: "/projects/qube-home.jpg", alt: "QUBE home and restaurant screens", caption: "Dashboard with rewards progress and restaurant discovery" },
+      { src: "/projects/qube-gamification.jpg", alt: "QUBE gamification features", caption: "Lucky Spin, Scratch to Win, and reward claim modals" },
+      { src: "/projects/qube-collectibles.jpg", alt: "QUBE collectibles system", caption: "Ingredient collection, meal unlocking, and coupon rewards" },
+      { src: "/projects/qube-profile.jpg", alt: "QUBE profile and achievements", caption: "User profile with achievement badges and progress tracking" }
+    ],
+    testimonial: {
+      quote: "QUBE transformed how users engage with our platform. The gamification elements keep them coming back day after day.",
+      author: "Product Team",
+      role: "QUBE Development"
+    }
+  },
+  {
+    id: 2,
     slug: "fintrack-dashboard",
     title: "FinTrack Dashboard",
     category: "Dashboard",
@@ -124,7 +171,7 @@ export const projects: Project[] = [
     }
   },
   {
-    id: 2,
+    id: 3,
     slug: "healthsync-mobile",
     title: "HealthSync Mobile",
     category: "Mobile",
@@ -169,7 +216,7 @@ export const projects: Project[] = [
     }
   },
   {
-    id: 3,
+    id: 4,
     slug: "shopease-ecommerce",
     title: "ShopEase E-commerce",
     category: "Web Apps",
@@ -214,7 +261,7 @@ export const projects: Project[] = [
     }
   },
   {
-    id: 4,
+    id: 5,
     slug: "datavault-analytics",
     title: "DataVault Analytics",
     category: "Dashboard",
@@ -259,7 +306,7 @@ export const projects: Project[] = [
     }
   },
   {
-    id: 5,
+    id: 6,
     slug: "learnpath-education",
     title: "LearnPath Education",
     category: "Web Apps",
