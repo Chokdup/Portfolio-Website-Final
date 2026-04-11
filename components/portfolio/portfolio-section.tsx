@@ -13,7 +13,7 @@ function seededRandom(seed: number) {
   return x - Math.floor(x)
 }
 
-const categories = ["All", "Web Apps", "Mobile", "Dashboard"]
+const categories = ["All", "Web Apps", "Mobile Apps", "Mobile", "Dashboard"]
 
 function ProjectCard({ project, index }: { project: typeof projects[0]; index: number }) {
   const [isHovered, setIsHovered] = useState(false)

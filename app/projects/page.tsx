@@ -9,7 +9,7 @@ import { projects } from "@/lib/projects-data"
 import { ContactModalProvider, useContactModal } from "@/components/portfolio/contact-modal-context"
 import { ContactModal } from "@/components/portfolio/contact-modal"
 
-const categories = ["All", "Dashboard", "Mobile", "Web Apps"]
+const categories = ["All", "Web Apps", "Mobile Apps", "Mobile", "Dashboard"]
 
 function ProjectCard({ project, index }: { project: typeof projects[0]; index: number }) {
   const [isHovered, setIsHovered] = useState(false)

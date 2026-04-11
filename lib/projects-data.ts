@@ -116,13 +116,57 @@ export const projects: Project[] = [
       { src: "/projects/qube-onboarding.jpg", alt: "QUBE onboarding screens", caption: "Welcome flow with clear value proposition and easy sign-up" },
       { src: "/projects/qube-home.jpg", alt: "QUBE home and restaurant screens", caption: "Dashboard with rewards progress and restaurant discovery" },
       { src: "/projects/qube-gamification.jpg", alt: "QUBE gamification features", caption: "Lucky Spin, Scratch to Win, and reward claim modals" },
-      { src: "/projects/qube-collectibles.jpg", alt: "QUBE collectibles system", caption: "Ingredient collection, meal unlocking, and coupon rewards" },
-      { src: "/projects/qube-profile.jpg", alt: "QUBE profile and achievements", caption: "User profile with achievement badges and progress tracking" }
+      { src: "/projects/qube-collectibles.jpg", alt: "QUBE collectibles system", caption: "Ingredient collection, meal unlocking, and coupon rewards" }
     ],
     testimonial: {
       quote: "QUBE transformed how users engage with our platform. The gamification elements keep them coming back day after day.",
       author: "Product Team",
       role: "QUBE Development"
+    }
+  },
+  {
+    id: 7,
+    slug: "ndp",
+    title: "NDP - No Due Portal",
+    category: "Mobile Apps",
+    description: "A mobile-based due clearance system that simplified the due clearance process for students and teachers, reducing manual effort and improving efficiency.",
+    tags: ["UI/UX Design", "User Research", "Frontend Dev"],
+    metrics: "Streamlined Workflow",
+    image: "/projects/ndp-login-dashboard.png",
+    color: "from-green-500/20 to-emerald-600/20",
+    year: "2025",
+    contributions: ["UI/UX Design", "User Research", "Frontend Development"],
+    hook: "Transforming the tedious due clearance process into a seamless digital experience for students and staff.",
+    processBreakdown: [
+      "Conducted user research to understand pain points of students and teachers in the due clearance process",
+      "Mapped user journeys for both students checking/clearing dues and teachers reviewing requests",
+      "Analyzed the existing manual workflow to identify friction points and inefficiencies",
+      "Designed a clean, intuitive mobile interface for easy navigation",
+      "Created a progress tracking system with visual indicators for clearance status",
+      "Developed department-wise due listing with toggle functionality for teachers",
+      "Built an admin contact system for enquiries and support",
+      "Implemented a certificate generation feature for cleared students",
+      "Designed a user profile system with editable account information"
+    ],
+    situation: "The existing due clearance process for students was manual, time-consuming, and confusing. Students had to physically visit multiple offices to check and clear their dues, while teachers struggled to track clearance status. This created delays, frustration, and inefficiency for both students and staff.",
+    action: "I designed and developed NDP (No Due Portal), a mobile-based due clearance system that simplified the process for both students and teachers. I conducted user research to understand real pain points, designed a clean and intuitive interface, and built the frontend to ensure a smooth digital experience. The system allowed students to view and clear dues easily while enabling teachers to review and approve requests efficiently.",
+    result: "NDP streamlined the due clearance workflow, reduced manual effort, and improved overall efficiency for both students and teachers. By creating a clear, easy-to-use system, the platform increased user satisfaction and improved the overall experience - supporting my mission to design intuitive digital products that enhance user experience and retention.",
+    designProcess: [
+      { title: "Research", description: "User interviews with students and staff to understand due clearance pain points" },
+      { title: "Define", description: "Created user personas and mapped workflows for both student and admin views" },
+      { title: "Ideate", description: "Explored multiple interface concepts for tracking and managing dues" },
+      { title: "Prototype", description: "Built interactive prototypes tested with real students and teachers" },
+      { title: "Deliver", description: "Developed final mobile app with smooth frontend implementation" }
+    ],
+    mockups: [
+      { src: "/projects/ndp-login-dashboard.png", alt: "NDP login and dashboard screens", caption: "Welcome login screen, No Due certificate, and student dashboard with completion tracking" },
+      { src: "/projects/ndp-screens-1.png", alt: "NDP due form and department details", caption: "Admin contact form, student due form with department list, and department detail modal" },
+      { src: "/projects/ndp-admin-profile.png", alt: "NDP admin and profile screens", caption: "Admin view with student list, due details modal, and user profile management" }
+    ],
+    testimonial: {
+      quote: "NDP made our due clearance process so much easier. Students no longer need to run between offices, and we can track everything digitally.",
+      author: "Administrative Staff",
+      role: "GCIT Administration"
     }
   },
   {

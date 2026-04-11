@@ -1,18 +1,17 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { ArrowRight, Award, Calendar, Briefcase, Smartphone, Globe } from "lucide-react"
+import { ArrowRight, Award, Calendar, Briefcase, Globe } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { projects } from "@/lib/projects-data"
 
 export function FeaturedProject() {
-  // Get the first two projects (SCAN2DINE and QUBE) as featured projects
+  // Get only SCAN2DINE as the featured flagship project
   const scan2dine = projects.find(p => p.slug === "scan2dine")
-  const qube = projects.find(p => p.slug === "qube")
 
-  if (!scan2dine && !qube) return null
+  if (!scan2dine) return null
 
   return (
     <section className="py-24 lg:py-32 relative overflow-hidden">
@@ -31,13 +30,13 @@ export function FeaturedProject() {
         >
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-amber-500/30 bg-amber-500/10 mb-4">
             <Award className="w-4 h-4 text-amber-500" />
-            <span className="text-sm font-medium text-amber-500">Featured Projects</span>
+            <span className="text-sm font-medium text-amber-500">Featured Project</span>
           </div>
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mt-4 mb-6 text-balance">
             Flagship Work
           </h2>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto text-pretty">
-            Award-winning projects showcasing the impact of user-centered design and gamification on real-world experiences.
+            Award-winning project showcasing the impact of user-centered design on real-world dining experiences.
           </p>
         </motion.div>
 
@@ -189,158 +188,7 @@ export function FeaturedProject() {
             </motion.div>
           )}
 
-          {/* QUBE - Secondary Featured Project */}
-          {qube && (
-            <motion.div
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-            >
-              <Link href={`/projects/${qube.slug}`} className="block group">
-                <div className="relative rounded-3xl overflow-hidden border-2 border-red-500/30 bg-gradient-to-br from-red-500/10 to-orange-500/10">
-                  {/* Mobile Badge */}
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    whileInView={{ opacity: 1, scale: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: 0.3 }}
-                    className="absolute top-6 right-6 z-20 flex items-center gap-2 px-4 py-2 bg-red-500 text-white rounded-full font-bold text-sm shadow-lg shadow-red-500/25"
-                  >
-                    <Smartphone className="w-4 h-4" />
-                    Mobile App
-                  </motion.div>
 
-                  <div className="grid lg:grid-cols-2 gap-0">
-                    {/* Project Info - Left side for variety */}
-                    <div className="p-8 lg:p-12 flex flex-col justify-center order-2 lg:order-1">
-                      {/* Year and Category */}
-                      <div className="flex flex-wrap items-center gap-4 mb-6">
-                        <span className="flex items-center gap-2 text-red-500 text-sm font-medium">
-                          <Calendar className="w-4 h-4" />
-                          {qube.year}
-                        </span>
-                        <span className="w-1 h-1 rounded-full bg-muted-foreground" />
-                        <span className="text-muted-foreground text-sm uppercase tracking-wider">
-                          {qube.category}
-                        </span>
-                      </div>
-
-                      {/* Title */}
-                      <h3 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 group-hover:text-red-500 transition-colors">
-                        {qube.title}
-                      </h3>
-
-                      {/* Hook */}
-                      <p className="text-xl text-muted-foreground mb-6 leading-relaxed">
-                        {qube.hook}
-                      </p>
-
-                      {/* Contributions */}
-                      <div className="mb-8">
-                        <div className="flex items-center gap-2 mb-3">
-                          <Briefcase className="w-4 h-4 text-red-500" />
-                          <span className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
-                            My Contributions
-                          </span>
-                        </div>
-                        <div className="flex flex-wrap gap-2">
-                          {qube.contributions.map((contribution) => (
-                            <span
-                              key={contribution}
-                              className="px-3 py-1.5 bg-red-500/15 border border-red-500/30 rounded-full text-sm font-medium text-red-400"
-                            >
-                              {contribution}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-
-                      {/* CTA */}
-                      <div>
-                        <Button
-                          size="lg"
-                          className="bg-red-500 text-white hover:bg-red-400 shadow-lg shadow-red-500/25 group/btn"
-                        >
-                          View Full Case Study
-                          <ArrowRight className="w-4 h-4 ml-2 group-hover/btn:translate-x-1 transition-transform" />
-                        </Button>
-                      </div>
-                    </div>
-
-                    {/* Project Image / Mockup - Right side */}
-                    <div className="relative aspect-[4/3] lg:aspect-auto overflow-hidden order-1 lg:order-2">
-                      {/* Animated background */}
-                      <div className="absolute inset-0 bg-gradient-to-br from-red-500/20 to-orange-500/20">
-                        <div className="absolute inset-0 overflow-hidden">
-                          {[...Array(6)].map((_, i) => (
-                            <motion.div
-                              key={i}
-                              className="absolute w-24 h-24 border border-red-500/20 rounded-full"
-                              style={{
-                                left: `${10 + i * 15}%`,
-                                top: `${10 + (i % 3) * 25}%`,
-                              }}
-                              animate={{
-                                scale: [1, 1.3, 1],
-                                opacity: [0.3, 0.6, 0.3],
-                              }}
-                              transition={{
-                                duration: 4 + i,
-                                repeat: Infinity,
-                                ease: "easeInOut",
-                              }}
-                            />
-                          ))}
-                        </div>
-                      </div>
-
-                      {/* Mobile mockup preview */}
-                      <div className="absolute inset-8 flex items-center justify-center gap-4">
-                        {/* Phone mockup 1 */}
-                        <motion.div
-                          whileHover={{ y: -10, scale: 1.02 }}
-                          transition={{ duration: 0.4 }}
-                          className="relative w-40 md:w-48 bg-card/95 backdrop-blur-sm rounded-3xl border-4 border-gray-800 shadow-2xl overflow-hidden"
-                        >
-                          {/* Phone notch */}
-                          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-20 h-5 bg-gray-800 rounded-b-2xl z-10" />
-                          <div className="relative aspect-[9/19] bg-gradient-to-br from-background to-muted/30">
-                            <Image
-                              src="/projects/qube-home.jpg"
-                              alt="QUBE Home Screen"
-                              fill
-                              className="object-cover object-top"
-                              sizes="200px"
-                            />
-                          </div>
-                        </motion.div>
-
-                        {/* Phone mockup 2 - slightly offset */}
-                        <motion.div
-                          whileHover={{ y: -10, scale: 1.02 }}
-                          transition={{ duration: 0.4 }}
-                          className="relative w-40 md:w-48 bg-card/95 backdrop-blur-sm rounded-3xl border-4 border-gray-800 shadow-2xl overflow-hidden -ml-8 mt-8"
-                        >
-                          {/* Phone notch */}
-                          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-20 h-5 bg-gray-800 rounded-b-2xl z-10" />
-                          <div className="relative aspect-[9/19] bg-gradient-to-br from-background to-muted/30">
-                            <Image
-                              src="/projects/qube-gamification.jpg"
-                              alt="QUBE Gamification"
-                              fill
-                              className="object-cover object-top"
-                              sizes="200px"
-                            />
-                          </div>
-                        </motion.div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </Link>
-            </motion.div>
-          )}
         </div>
       </div>
     </section>
