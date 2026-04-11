@@ -90,16 +90,16 @@ export function ContactModal() {
             }}
             className="relative w-full max-w-md"
           >
-            {/* Glow effect - amber/gold to match SCAN2DINE styling */}
-            <div className="absolute -inset-1 bg-gradient-to-r from-amber-500/30 via-amber-400/20 to-orange-500/30 rounded-2xl blur-xl opacity-60" />
+            {/* Glow effect - blue to match brand styling */}
+            <div className="absolute -inset-1 bg-gradient-to-r from-primary/30 via-primary/20 to-primary/30 rounded-2xl blur-xl opacity-60" />
             
-            {/* Modal content - amber/gold border to match SCAN2DINE styling */}
-            <div className="relative bg-card/95 backdrop-blur-xl rounded-2xl border-2 border-amber-500/40 shadow-2xl shadow-amber-500/10 overflow-hidden">
+            {/* Modal content - blue border to match brand styling */}
+            <div className="relative bg-card/95 backdrop-blur-xl rounded-2xl border-2 border-primary/40 shadow-2xl shadow-primary/10 overflow-hidden">
               {/* Header */}
               <div className="relative px-6 pt-6 pb-4 border-b border-border/50">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-xl bg-amber-500/10 border border-amber-500/30">
-                    <MessageSquare className="w-5 h-5 text-amber-500" />
+                  <div className="p-2 rounded-xl bg-primary/10 border border-primary/30">
+                    <MessageSquare className="w-5 h-5 text-primary" />
                   </div>
                   <div>
                     <h3 className="text-lg font-bold text-foreground">Quick Message</h3>
@@ -131,9 +131,9 @@ export function ContactModal() {
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
                       transition={{ type: "spring", stiffness: 300, damping: 20, delay: 0.1 }}
-                      className="w-16 h-16 rounded-full bg-amber-500/10 border border-amber-500/30 flex items-center justify-center mb-4"
+                      className="w-16 h-16 rounded-full bg-primary/10 border border-primary/30 flex items-center justify-center mb-4"
                     >
-                      <CheckCircle className="w-8 h-8 text-amber-500" />
+                      <CheckCircle className="w-8 h-8 text-primary" />
                     </motion.div>
                     <h4 className="text-xl font-bold mb-2 text-foreground">Message Sent!</h4>
                     <p className="text-muted-foreground text-sm">
@@ -145,50 +145,50 @@ export function ContactModal() {
                     {/* Name & Email row */}
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <label className="text-sm font-medium text-amber-500">Name <span className="text-red-500">*</span></label>
+                        <label className="text-sm font-medium text-primary">Name <span className="text-red-500">*</span></label>
                         <Input
                           placeholder="Your name"
                           value={formData.name}
                           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                           required
-                          className="bg-background/60 border-2 border-amber-500/30 focus:border-amber-500 hover:border-amber-500/50 transition-all placeholder:text-muted-foreground/50 h-11"
+                          className="bg-background/60 border-2 border-primary/30 focus:border-primary hover:border-primary/50 transition-all placeholder:text-muted-foreground/50 h-11"
                         />
                       </div>
                       <div className="space-y-2">
-                        <label className="text-sm font-medium text-amber-500">Email <span className="text-red-500">*</span></label>
+                        <label className="text-sm font-medium text-primary">Email <span className="text-red-500">*</span></label>
                         <Input
                           type="email"
                           placeholder="your@email.com"
                           value={formData.email}
                           onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                           required
-                          className="bg-background/60 border-2 border-amber-500/30 focus:border-amber-500 hover:border-amber-500/50 transition-all placeholder:text-muted-foreground/50 h-11"
+                          className="bg-background/60 border-2 border-primary/30 focus:border-primary hover:border-primary/50 transition-all placeholder:text-muted-foreground/50 h-11"
                         />
                       </div>
                     </div>
 
                     {/* Subject */}
                     <div className="space-y-2">
-                      <label className="text-sm font-medium text-amber-500">Subject <span className="text-red-500">*</span></label>
+                      <label className="text-sm font-medium text-primary">Subject <span className="text-red-500">*</span></label>
                       <Input
                         placeholder="Project inquiry"
                         value={formData.subject}
                         onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
                         required
-                        className="bg-background/60 border-2 border-amber-500/30 focus:border-amber-500 hover:border-amber-500/50 transition-all placeholder:text-muted-foreground/50 h-11"
+                        className="bg-background/60 border-2 border-primary/30 focus:border-primary hover:border-primary/50 transition-all placeholder:text-muted-foreground/50 h-11"
                       />
                     </div>
 
                     {/* Message */}
                     <div className="space-y-2">
-                      <label className="text-sm font-medium text-amber-500">Message <span className="text-red-500">*</span></label>
+                      <label className="text-sm font-medium text-primary">Message <span className="text-red-500">*</span></label>
                       <Textarea
                         placeholder="Tell me about your project..."
                         rows={3}
                         value={formData.message}
                         onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                         required
-                        className="bg-background/60 border-2 border-amber-500/30 focus:border-amber-500 hover:border-amber-500/50 transition-all placeholder:text-muted-foreground/50 resize-none"
+                        className="bg-background/60 border-2 border-primary/30 focus:border-primary hover:border-primary/50 transition-all placeholder:text-muted-foreground/50 resize-none"
                       />
                     </div>
 
@@ -218,7 +218,7 @@ export function ContactModal() {
                       <Button
                         type="submit"
                         disabled={isLoading}
-                        className="flex-1 bg-amber-500 text-amber-950 hover:bg-amber-400 shadow-lg shadow-amber-500/25 font-semibold"
+                        className="flex-1 bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg shadow-primary/25 font-semibold"
                       >
                         {isLoading ? (
                           <>

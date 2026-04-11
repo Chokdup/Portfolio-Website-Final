@@ -183,7 +183,7 @@ export function ContactSection() {
             transition={{ duration: 0.6 }}
             className="lg:col-span-3"
           >
-            <div className="bg-card/80 backdrop-blur-sm rounded-2xl p-8 border-2 border-amber-500/30">
+            <div className="bg-card/80 backdrop-blur-sm rounded-2xl p-8 border-2 border-primary/30">
               {isSubmitted ? (
                 <motion.div
                   initial={{ opacity: 0, scale: 0.8 }}
@@ -203,46 +203,46 @@ export function ContactSection() {
                   <FieldGroup className="space-y-6">
                     <div className="grid sm:grid-cols-2 gap-6">
                       <Field>
-                        <FieldLabel className="text-amber-500">Name <span className="text-red-500">*</span></FieldLabel>
+                        <FieldLabel className="text-primary">Name <span className="text-red-500">*</span></FieldLabel>
                         <Input
                           placeholder="Your name"
                           value={formData.name}
                           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                           required
-                          className="bg-background/80 border-2 border-amber-500/30 focus:border-amber-500 hover:border-amber-500/50 transition-colors placeholder:text-muted-foreground/60"
+                          className="bg-background/80 border-2 border-primary/30 focus:border-primary hover:border-primary/50 transition-colors placeholder:text-muted-foreground/60"
                         />
                       </Field>
                       <Field>
-                        <FieldLabel className="text-amber-500">Email <span className="text-red-500">*</span></FieldLabel>
+                        <FieldLabel className="text-primary">Email <span className="text-red-500">*</span></FieldLabel>
                         <Input
                           type="email"
                           placeholder="your@email.com"
                           value={formData.email}
                           onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                           required
-                          className="bg-background/80 border-2 border-amber-500/30 focus:border-amber-500 hover:border-amber-500/50 transition-colors placeholder:text-muted-foreground/60"
+                          className="bg-background/80 border-2 border-primary/30 focus:border-primary hover:border-primary/50 transition-colors placeholder:text-muted-foreground/60"
                         />
                       </Field>
                     </div>
                     <Field>
-                      <FieldLabel className="text-amber-500">Subject <span className="text-red-500">*</span></FieldLabel>
+                      <FieldLabel className="text-primary">Subject <span className="text-red-500">*</span></FieldLabel>
                       <Input
                         placeholder="Project inquiry"
                         value={formData.subject}
                         onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
                         required
-                        className="bg-background/80 border-2 border-amber-500/30 focus:border-amber-500 hover:border-amber-500/50 transition-colors placeholder:text-muted-foreground/60"
+                        className="bg-background/80 border-2 border-primary/30 focus:border-primary hover:border-primary/50 transition-colors placeholder:text-muted-foreground/60"
                       />
                     </Field>
                     <Field>
-                      <FieldLabel className="text-amber-500">Message <span className="text-red-500">*</span></FieldLabel>
+                      <FieldLabel className="text-primary">Message <span className="text-red-500">*</span></FieldLabel>
                       <Textarea
                         placeholder="Tell me about your project..."
                         rows={4}
                         value={formData.message}
                         onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                         required
-                        className="bg-background/80 border-2 border-amber-500/30 focus:border-amber-500 hover:border-amber-500/50 transition-colors placeholder:text-muted-foreground/60 resize-none"
+                        className="bg-background/80 border-2 border-primary/30 focus:border-primary hover:border-primary/50 transition-colors placeholder:text-muted-foreground/60 resize-none"
                       />
                     </Field>
                     
@@ -262,7 +262,7 @@ export function ContactSection() {
                       type="submit"
                       size="lg"
                       disabled={isLoading}
-                      className="w-full bg-amber-500 text-amber-950 hover:bg-amber-400 shadow-lg shadow-amber-500/25 font-semibold"
+                      className="w-full bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg shadow-primary/25 font-semibold"
                     >
                       {isLoading ? (
                         <>
