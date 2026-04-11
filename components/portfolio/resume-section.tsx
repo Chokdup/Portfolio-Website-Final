@@ -1,7 +1,7 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { Briefcase, GraduationCap, Download, ExternalLink, Award } from "lucide-react"
+import { Briefcase, GraduationCap, Download, ExternalLink, Award, Play, Video } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 const experience = [
@@ -250,6 +250,113 @@ export function ResumeSection() {
             </div>
           </motion.div>
         </div>
+
+        {/* Video Resume Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="mt-16"
+        >
+          <div className="flex items-center gap-3 mb-8 justify-center">
+            <div className="p-2 rounded-lg bg-primary/10">
+              <Video className="w-5 h-5 text-primary" />
+            </div>
+            <h3 className="text-2xl font-bold">Video Resume</h3>
+          </div>
+
+          <div className="max-w-3xl mx-auto">
+            {/* Video Player Container */}
+            <div className="relative group">
+              {/* Glow effect */}
+              <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 via-primary/10 to-primary/20 rounded-2xl blur-xl opacity-60 group-hover:opacity-80 transition-opacity" />
+              
+              {/* Video frame */}
+              <div className="relative bg-card/80 backdrop-blur-sm rounded-2xl border-2 border-primary/30 overflow-hidden">
+                {/* Aspect ratio container for 16:9 video */}
+                <div className="relative aspect-video bg-gradient-to-br from-background via-card to-background">
+                  {/* Subtle pattern overlay */}
+                  <div className="absolute inset-0 opacity-5">
+                    <div className="absolute inset-0" style={{
+                      backgroundImage: `radial-gradient(circle at 1px 1px, currentColor 1px, transparent 0)`,
+                      backgroundSize: '24px 24px'
+                    }} />
+                  </div>
+
+                  {/* Animated rings background */}
+                  <div className="absolute inset-0 flex items-center justify-center overflow-hidden">
+                    {[...Array(3)].map((_, i) => (
+                      <motion.div
+                        key={i}
+                        className="absolute rounded-full border border-primary/10"
+                        style={{
+                          width: `${150 + i * 80}px`,
+                          height: `${150 + i * 80}px`,
+                        }}
+                        animate={{
+                          scale: [1, 1.1, 1],
+                          opacity: [0.3, 0.5, 0.3],
+                        }}
+                        transition={{
+                          duration: 3 + i,
+                          repeat: Infinity,
+                          ease: "easeInOut",
+                          delay: i * 0.5,
+                        }}
+                      />
+                    ))}
+                  </div>
+
+                  {/* Center content */}
+                  <div className="absolute inset-0 flex flex-col items-center justify-center">
+                    {/* Play button */}
+                    <motion.div
+                      whileHover={{ scale: 1.05 }}
+                      className="relative mb-6"
+                    >
+                      <div className="absolute inset-0 bg-primary/20 rounded-full blur-xl" />
+                      <div className="relative w-20 h-20 rounded-full bg-primary/10 border-2 border-primary/40 flex items-center justify-center cursor-not-allowed">
+                        <Play className="w-8 h-8 text-primary ml-1" />
+                      </div>
+                    </motion.div>
+
+                    {/* Coming Soon badge */}
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: 0.3 }}
+                      className="px-4 py-2 rounded-full bg-primary/10 border border-primary/30 mb-4"
+                    >
+                      <span className="text-sm font-medium text-primary">Coming Soon</span>
+                    </motion.div>
+
+                    {/* Description */}
+                    <p className="text-muted-foreground text-sm text-center max-w-md px-6">
+                      A short introduction video will be available here soon.
+                    </p>
+                  </div>
+
+                  {/* Corner accents */}
+                  <div className="absolute top-4 left-4 w-8 h-8 border-l-2 border-t-2 border-primary/30 rounded-tl-lg" />
+                  <div className="absolute top-4 right-4 w-8 h-8 border-r-2 border-t-2 border-primary/30 rounded-tr-lg" />
+                  <div className="absolute bottom-4 left-4 w-8 h-8 border-l-2 border-b-2 border-primary/30 rounded-bl-lg" />
+                  <div className="absolute bottom-4 right-4 w-8 h-8 border-r-2 border-b-2 border-primary/30 rounded-br-lg" />
+                </div>
+
+                {/* Video controls bar (decorative) */}
+                <div className="px-4 py-3 bg-card/60 border-t border-border/50 flex items-center gap-4">
+                  <div className="w-3 h-3 rounded-full bg-primary/40" />
+                  <div className="flex-1 h-1 rounded-full bg-muted overflow-hidden">
+                    <div className="w-0 h-full bg-primary/50 rounded-full" />
+                  </div>
+                  <span className="text-xs text-muted-foreground font-mono">0:00 / --:--</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </motion.div>
       </div>
     </section>
   )
