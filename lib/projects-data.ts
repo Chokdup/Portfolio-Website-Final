@@ -170,6 +170,53 @@ export const projects: Project[] = [
     }
   },
   {
+    id: 8,
+    slug: "q-less",
+    title: "Q-Less",
+    category: "Web Apps",
+    description: "A web-based Queue Management System designed to simplify appointment and queue handling for doctors, patients, and receptionists in healthcare settings.",
+    tags: ["UI/UX Design", "User Research", "Frontend Dev"],
+    metrics: "Reduced Wait Time",
+    image: "/projects/qless-landing.png",
+    color: "from-blue-500/20 to-sky-600/20",
+    year: "2025",
+    contributions: ["UI/UX Design", "User Research", "Frontend Development"],
+    hook: "Eliminating queue confusion and wait time anxiety with a transparent, real-time queue management system for healthcare.",
+    processBreakdown: [
+      "Conducted user research to understand the needs of doctors, patients, and reception staff",
+      "Mapped user journeys for each role to identify pain points in existing queue systems",
+      "Analyzed manual and semi-digital queue workflows to find inefficiencies",
+      "Designed a clean, intuitive interface for easy queue management",
+      "Created real-time token tracking with clear visibility for all users",
+      "Developed role-specific dashboards for patients, receptionists, and doctors",
+      "Built a notification system for queue updates and turn alerts",
+      "Implemented chamber assignment and patient registration flows",
+      "Designed a doctor panel for clearing tokens and managing queue overview"
+    ],
+    situation: "Clinics and hospitals often relied on manual or semi-digital queue systems that created long wait times, confusion, and inefficient communication between patients, receptionists, and doctors. Patients had difficulty tracking their turn, receptionists struggled to manage queues efficiently, and doctors lacked real-time visibility into patient flow.",
+    action: "I designed and developed Q-Less, a web-based queue management system aimed at simplifying patient flow and improving efficiency. I conducted user research to understand the needs of doctors, patients, and reception staff, then designed a clean, intuitive interface that made queue management easy and transparent. I handled UI/UX design and frontend development to ensure the experience was smooth, responsive, and accessible for all user types.",
+    result: "Q-Less reduced confusion and waiting time by providing clear queue visibility and better communication between users. The system helped improve operational efficiency for staff while enhancing the overall patient experience. By simplifying workflows and improving usability, the platform supported higher satisfaction and better engagement - aligning with my goal of building easy-to-use digital solutions that increase user retention.",
+    designProcess: [
+      { title: "Research", description: "User interviews with doctors, patients, and receptionists to understand queue pain points" },
+      { title: "Define", description: "Created user personas and mapped workflows for each role in the queue system" },
+      { title: "Ideate", description: "Explored multiple interface concepts for real-time queue tracking and management" },
+      { title: "Prototype", description: "Built interactive prototypes tested with healthcare staff and patients" },
+      { title: "Deliver", description: "Developed final web application with responsive frontend implementation" }
+    ],
+    mockups: [
+      { src: "/projects/qless-landing.png", alt: "Q-Less landing page", caption: "Welcome page with CID input and feature highlights for queue management" },
+      { src: "/projects/qless-patient-dashboard.png", alt: "Q-Less patient dashboard", caption: "Patient view showing token number, current queue position, chamber assignment, and wait time" },
+      { src: "/projects/qless-notifications.png", alt: "Q-Less notifications", caption: "Real-time notifications for registration, chamber assignment, and turn alerts" },
+      { src: "/projects/qless-receptionist.png", alt: "Q-Less receptionist panel", caption: "Receptionist dashboard for patient registration with chamber and token assignment" },
+      { src: "/projects/qless-doctor-panel.png", alt: "Q-Less doctor panel", caption: "Doctor panel with queue overview, token clearing, and recently completed patients" }
+    ],
+    testimonial: {
+      quote: "Q-Less transformed our clinic workflow. Patients know exactly where they are in the queue, and our staff can manage appointments much more efficiently.",
+      author: "Healthcare Staff",
+      role: "Clinic Administration"
+    }
+  },
+  {
     id: 2,
     slug: "fintrack-dashboard",
     title: "FinTrack Dashboard",
