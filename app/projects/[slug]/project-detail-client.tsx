@@ -3,6 +3,7 @@
 import { motion, useScroll, useTransform } from "framer-motion"
 import { ArrowLeft, ArrowRight, ExternalLink, Quote, Calendar, Briefcase, CheckCircle2 } from "lucide-react"
 import Link from "next/link"
+import Image from "next/image"
 import { useRef } from "react"
 import { Button } from "@/components/ui/button"
 import type { Project } from "@/lib/projects-data"
@@ -404,35 +405,48 @@ function ProjectDetailContent({ project }: ProjectDetailClientProps) {
                   transition={{ duration: 0.4 }}
                   className={`aspect-[16/10] rounded-3xl bg-gradient-to-br ${project.color} border border-primary/20 overflow-hidden shadow-2xl shadow-primary/10`}
                 >
-                  {/* Mockup visualization */}
-                  <div className="absolute inset-6 md:inset-10 bg-card/95 backdrop-blur-sm rounded-2xl border border-primary/30 shadow-2xl overflow-hidden">
-                    {/* Browser chrome */}
-                    <div className="flex items-center gap-2 px-4 py-3 border-b border-border/50 bg-muted/50">
-                      <div className="flex gap-2">
-                        <div className="w-3 h-3 rounded-full bg-red-500/60" />
-                        <div className="w-3 h-3 rounded-full bg-yellow-500/60" />
-                        <div className="w-3 h-3 rounded-full bg-green-500/60" />
+                  {/* Check if project is SCAN2DINE to show actual images */}
+                  {project.slug === "scan2dine" ? (
+                    <div className="absolute inset-0">
+                      <Image
+                        src={mockup.src}
+                        alt={mockup.alt}
+                        fill
+                        className="object-cover object-top"
+                        sizes="(max-width: 768px) 100vw, 80vw"
+                      />
+                    </div>
+                  ) : (
+                    /* Mockup visualization for other projects */
+                    <div className="absolute inset-6 md:inset-10 bg-card/95 backdrop-blur-sm rounded-2xl border border-primary/30 shadow-2xl overflow-hidden">
+                      {/* Browser chrome */}
+                      <div className="flex items-center gap-2 px-4 py-3 border-b border-border/50 bg-muted/50">
+                        <div className="flex gap-2">
+                          <div className="w-3 h-3 rounded-full bg-red-500/60" />
+                          <div className="w-3 h-3 rounded-full bg-yellow-500/60" />
+                          <div className="w-3 h-3 rounded-full bg-green-500/60" />
+                        </div>
+                        <div className="flex-1 mx-4">
+                          <div className="h-5 bg-background/60 rounded-lg max-w-md" />
+                        </div>
                       </div>
-                      <div className="flex-1 mx-4">
-                        <div className="h-5 bg-background/60 rounded-lg max-w-md" />
+                      {/* Content placeholder */}
+                      <div className="p-8 space-y-6">
+                        <div className="h-5 w-1/3 bg-primary/30 rounded" />
+                        <div className="h-4 w-2/3 bg-muted/50 rounded" />
+                        <div className="h-3 w-1/2 bg-muted/30 rounded" />
+                        <div className="grid grid-cols-3 gap-6 mt-8">
+                          <div className="h-28 bg-primary/20 rounded-xl" />
+                          <div className="h-28 bg-primary/15 rounded-xl" />
+                          <div className="h-28 bg-primary/10 rounded-xl" />
+                        </div>
+                        <div className="grid grid-cols-2 gap-6 mt-4">
+                          <div className="h-20 bg-muted/30 rounded-xl" />
+                          <div className="h-20 bg-muted/30 rounded-xl" />
+                        </div>
                       </div>
                     </div>
-                    {/* Content placeholder */}
-                    <div className="p-8 space-y-6">
-                      <div className="h-5 w-1/3 bg-primary/30 rounded" />
-                      <div className="h-4 w-2/3 bg-muted/50 rounded" />
-                      <div className="h-3 w-1/2 bg-muted/30 rounded" />
-                      <div className="grid grid-cols-3 gap-6 mt-8">
-                        <div className="h-28 bg-primary/20 rounded-xl" />
-                        <div className="h-28 bg-primary/15 rounded-xl" />
-                        <div className="h-28 bg-primary/10 rounded-xl" />
-                      </div>
-                      <div className="grid grid-cols-2 gap-6 mt-4">
-                        <div className="h-20 bg-muted/30 rounded-xl" />
-                        <div className="h-20 bg-muted/30 rounded-xl" />
-                      </div>
-                    </div>
-                  </div>
+                  )}
                 </motion.div>
                 <p className="text-center text-muted-foreground mt-6 text-lg">{mockup.caption}</p>
               </motion.div>

@@ -34,6 +34,51 @@ export interface Project {
 
 export const projects: Project[] = [
   {
+    id: 0,
+    slug: "scan2dine",
+    title: "SCAN2DINE",
+    category: "Web Apps",
+    description: "Award-winning QR-based digital menu system that transforms dining experiences by making them easier, faster, and more enjoyable through contactless technology.",
+    tags: ["UI/UX Design", "Frontend Dev", "UX Research"],
+    metrics: "Best Project Award",
+    image: "/projects/scan2dine-hero.jpg",
+    color: "from-amber-500/20 to-orange-600/20",
+    year: "2025",
+    contributions: ["UI/UX Design", "UX Research", "Frontend Development", "Poster Design", "Promotional Video"],
+    hook: "Transforming dining experiences with a simple scan - making restaurant ordering seamless, hygienic, and delightful.",
+    processBreakdown: [
+      "Conducted extensive user research to understand pain points in traditional restaurant ordering",
+      "Analyzed customer behavior and restaurant workflows to identify friction points",
+      "Created user personas and journey maps for both customers and restaurant staff",
+      "Designed intuitive information architecture for easy menu navigation",
+      "Built interactive prototypes in Figma for early validation with real users",
+      "Developed a clean, accessible interface optimized for mobile scanning",
+      "Implemented responsive frontend with focus on speed and usability",
+      "Designed promotional materials including posters and video content",
+      "Conducted usability testing to refine the ordering experience"
+    ],
+    situation: "Restaurants were relying on physical menu books that were often unhygienic, outdated, and inconvenient to update. This created friction in the customer experience and limited restaurants' ability to deliver a smooth and engaging ordering journey, reducing customer satisfaction and repeat visits.",
+    action: "I designed and developed SCAN2DINE, a QR-based digital menu system focused on improving usability, accessibility, and customer experience. I led the UI/UX design, conducted user research to understand real user needs, and built a clean, intuitive interface that allowed customers to quickly browse menus with ease. I also worked on frontend development and created promotional materials to help drive adoption.",
+    result: "The solution improved customer experience by providing a fast, hygienic, and easy-to-use digital menu interface. By removing friction and making the menu experience seamless, SCAN2DINE helped restaurants deliver a more engaging user experience and contributed to higher user satisfaction and retention. The project was recognized as a Best Project for its real-world impact and usability-driven design.",
+    designProcess: [
+      { title: "Research", description: "User interviews and competitive analysis to understand dining pain points" },
+      { title: "Define", description: "Created personas and mapped customer journeys for digital ordering" },
+      { title: "Ideate", description: "Explored multiple design concepts for QR-based menu interfaces" },
+      { title: "Prototype", description: "Built interactive prototypes tested with real restaurant customers" },
+      { title: "Deliver", description: "Developed final product with frontend implementation and promotional materials" }
+    ],
+    mockups: [
+      { src: "/projects/scan2dine-home.jpg", alt: "SCAN2DINE home page", caption: "Landing page showcasing the hassle-free digital dining experience" },
+      { src: "/projects/scan2dine-about.jpg", alt: "SCAN2DINE about section", caption: "About page explaining the QR-based menu system benefits" },
+      { src: "/projects/scan2dine-contact.jpg", alt: "SCAN2DINE contact page", caption: "Contact form with consistent Get in Touch styling" }
+    ],
+    testimonial: {
+      quote: "SCAN2DINE revolutionized how our customers interact with our menu. The contactless experience has significantly improved customer satisfaction.",
+      author: "Restaurant Partner",
+      role: "Early Adopter, SCAN2DINE"
+    }
+  },
+  {
     id: 1,
     slug: "fintrack-dashboard",
     title: "FinTrack Dashboard",
