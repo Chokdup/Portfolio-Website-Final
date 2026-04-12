@@ -13,6 +13,24 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(email)) {
+      return NextResponse.json(
+        { error: "Please enter a valid email address" },
+        { status: 400 }
+      )
+    }
+
+    // Check if environment variables are configured
+    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+      console.error("Email configuration missing: EMAIL_USER or EMAIL_PASS not set")
+      return NextResponse.json(
+        { error: "Email service is not configured. Please contact the administrator." },
+        { status: 500 }
+      )
+    }
+
     // Create transporter using Gmail SMTP
     const transporter = nodemailer.createTransport({
       service: "gmail",
@@ -21,6 +39,17 @@ export async function POST(request: NextRequest) {
         pass: process.env.EMAIL_PASS,
       },
     })
+
+    // Verify transporter configuration
+    try {
+      await transporter.verify()
+    } catch (verifyError) {
+      console.error("SMTP verification failed:", verifyError)
+      return NextResponse.json(
+        { error: "Email service connection failed. Please try again later." },
+        { status: 500 }
+      )
+    }
 
     // Email options
     const mailOptions = {
@@ -77,6 +106,23 @@ This message was sent from your portfolio website contact form.
     )
   } catch (error) {
     console.error("Error sending email:", error)
+    
+    // Provide more specific error messages
+    if (error instanceof Error) {
+      if (error.message.includes("Invalid login")) {
+        return NextResponse.json(
+          { error: "Email authentication failed. Please check credentials." },
+          { status: 500 }
+        )
+      }
+      if (error.message.includes("ECONNREFUSED") || error.message.includes("ETIMEDOUT")) {
+        return NextResponse.json(
+          { error: "Could not connect to email server. Please try again later." },
+          { status: 500 }
+        )
+      }
+    }
+    
     return NextResponse.json(
       { error: "Failed to send email. Please try again later." },
       { status: 500 }
