@@ -31,6 +31,13 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Debug: Log credential info (masked for security)
+    const emailUser = process.env.EMAIL_USER
+    const emailPass = process.env.EMAIL_PASS
+    console.log("[v0] EMAIL_USER:", emailUser)
+    console.log("[v0] EMAIL_PASS length:", emailPass?.length, "chars")
+    console.log("[v0] EMAIL_PASS first 4 chars:", emailPass?.substring(0, 4))
+
     // Create transporter using Gmail SMTP
     const transporter = nodemailer.createTransport({
       service: "gmail",
