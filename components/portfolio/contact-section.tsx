@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { motion } from "framer-motion"
-import { Send, Mail, MapPin, Clock, CheckCircle, Phone, Linkedin, Facebook, Instagram, MessageCircle, Loader2, AlertCircle } from "lucide-react"
+import { Send, Mail, MapPin, Clock, CheckCircle, Phone, Linkedin, Facebook, Instagram, MessageCircle, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -25,7 +25,6 @@ const socialLinks = [
 export function ContactSection() {
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -36,33 +35,18 @@ export function ContactSection() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
-    setError(null)
 
-    try {
-      const response = await fetch("/api/contact", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      })
+    // Simulate a brief loading state for better UX
+    await new Promise((resolve) => setTimeout(resolve, 1200))
 
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(data.error || "Failed to send message")
-      }
-
-      setIsSubmitted(true)
-      setTimeout(() => {
-        setIsSubmitted(false)
-        setFormData({ name: "", email: "", subject: "", message: "" })
-      }, 3000)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong")
-    } finally {
-      setIsLoading(false)
-    }
+    setIsLoading(false)
+    setIsSubmitted(true)
+    
+    // Reset form after showing success message
+    setTimeout(() => {
+      setIsSubmitted(false)
+      setFormData({ name: "", email: "", subject: "", message: "" })
+    }, 3000)
   }
 
   return (
@@ -245,18 +229,6 @@ export function ContactSection() {
                         className="bg-background/80 border-2 border-primary/30 focus:border-primary hover:border-primary/50 transition-colors placeholder:text-muted-foreground/60 resize-none"
                       />
                     </Field>
-                    
-                    {/* Error message */}
-                    {error && (
-                      <motion.div
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="flex items-center gap-2 p-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 text-sm"
-                      >
-                        <AlertCircle className="w-4 h-4 shrink-0" />
-                        {error}
-                      </motion.div>
-                    )}
                     
                     <Button
                       type="submit"
