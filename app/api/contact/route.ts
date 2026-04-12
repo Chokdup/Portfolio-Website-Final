@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import nodemailer from "nodemailer"
+import { Resend } from "resend"
 
 export async function POST(request: NextRequest) {
   try {
@@ -22,41 +22,17 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Check if environment variables are configured
-    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-      console.error("Email configuration missing: EMAIL_USER or EMAIL_PASS not set")
+    // Check if Resend API key is configured
+    if (!process.env.RESEND_API_KEY) {
+      console.error("RESEND_API_KEY is not set")
       return NextResponse.json(
         { error: "Email service is not configured. Please contact the administrator." },
         { status: 500 }
       )
     }
 
-    // Debug: Log credential info (masked for security)
-    const emailUser = process.env.EMAIL_USER
-    const emailPass = process.env.EMAIL_PASS
-    console.log("[v0] EMAIL_USER:", emailUser)
-    console.log("[v0] EMAIL_PASS length:", emailPass?.length, "chars")
-    console.log("[v0] EMAIL_PASS first 4 chars:", emailPass?.substring(0, 4))
-
-    // Create transporter using Gmail SMTP
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-    })
-
-    // Verify transporter configuration
-    try {
-      await transporter.verify()
-    } catch (verifyError) {
-      console.error("SMTP verification failed:", verifyError)
-      return NextResponse.json(
-        { error: "Email service connection failed. Please try again later." },
-        { status: 500 }
-      )
-    }
+    // Initialize Resend
+    const resend = new Resend(process.env.RESEND_API_KEY)
 
     // Get current date for the email
     const currentDate = new Date().toLocaleDateString('en-US', {
@@ -68,10 +44,10 @@ export async function POST(request: NextRequest) {
       minute: '2-digit'
     })
 
-    // Email options with premium dark theme matching website design
-    const mailOptions = {
-      from: process.env.EMAIL_USER,
-      to: "chokdup15cr@gmail.com",
+    // Send email using Resend
+    const { data, error } = await resend.emails.send({
+      from: "Portfolio Contact <onboarding@resend.dev>",
+      to: ["chokdup15cr@gmail.com"],
       replyTo: email,
       subject: `Portfolio Contact: ${subject}`,
       html: `
@@ -217,34 +193,22 @@ ${message}
 ---
 This message was sent from your portfolio website contact form.
       `,
+    })
+
+    if (error) {
+      console.error("Resend error:", error)
+      return NextResponse.json(
+        { error: "Failed to send email. Please try again later." },
+        { status: 500 }
+      )
     }
 
-    // Send email
-    await transporter.sendMail(mailOptions)
-
     return NextResponse.json(
-      { success: true, message: "Email sent successfully" },
+      { success: true, message: "Email sent successfully", id: data?.id },
       { status: 200 }
     )
   } catch (error) {
     console.error("Error sending email:", error)
-    
-    // Provide more specific error messages
-    if (error instanceof Error) {
-      if (error.message.includes("Invalid login")) {
-        return NextResponse.json(
-          { error: "Email authentication failed. Please check credentials." },
-          { status: 500 }
-        )
-      }
-      if (error.message.includes("ECONNREFUSED") || error.message.includes("ETIMEDOUT")) {
-        return NextResponse.json(
-          { error: "Could not connect to email server. Please try again later." },
-          { status: 500 }
-        )
-      }
-    }
-    
     return NextResponse.json(
       { error: "Failed to send email. Please try again later." },
       { status: 500 }
