@@ -10,31 +10,18 @@ import { projects } from "@/lib/projects-data"
 
 const categories = ["All", "Web Apps", "Mobile Apps", "Dashboard"]
 
-// Project mockup images mapping
-const projectImages: Record<string, string[]> = {
-  "scan2dine": ["/projects/scan2dine-home.jpg", "/projects/scan2dine-about.jpg"],
-  "qube": ["/projects/qube-home.jpg", "/projects/qube-onboarding.jpg"],
-  "ndp": ["/projects/ndp-login-dashboard.png", "/projects/ndp-screens-1.png"],
-  "q-less": ["/projects/qless-landing.png", "/projects/qless-patient-dashboard.png"],
-  "green-guardian": ["/projects/greenguardian-dashboard.png"],
+// Project featured images - using first mockup as static preview
+const projectPreviewImages: Record<string, string> = {
+  "scan2dine": "/projects/scan2dine-home.jpg",
+  "qube": "/projects/qube-home.jpg",
+  "ndp": "/projects/ndp-login-dashboard.png",
+  "q-less": "/projects/qless-landing.png",
+  "green-guardian": "/projects/greenguardian-dashboard.png",
 }
 
 function ProjectCard({ project, index }: { project: typeof projects[0]; index: number }) {
   const [isHovered, setIsHovered] = useState(false)
-  const [currentImageIndex, setCurrentImageIndex] = useState(0)
-  const images = projectImages[project.slug] || []
-  
-  // Cycle through images on hover
-  const handleMouseEnter = () => {
-    setIsHovered(true)
-    if (images.length > 1) {
-      const interval = setInterval(() => {
-        setCurrentImageIndex((prev) => (prev + 1) % images.length)
-      }, 1500)
-      return () => clearInterval(interval)
-    }
-  }
-
+  const previewImage = projectPreviewImages[project.slug]
   const isFeatured = project.slug === "scan2dine"
 
   return (
@@ -44,11 +31,8 @@ function ProjectCard({ project, index }: { project: typeof projects[0]; index: n
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.5, delay: index * 0.1 }}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={() => {
-          setIsHovered(false)
-          setCurrentImageIndex(0)
-        }}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
         className={`group relative rounded-2xl overflow-hidden cursor-pointer ${
           isFeatured ? "md:col-span-2 md:row-span-2" : ""
         }`}
@@ -87,11 +71,16 @@ function ProjectCard({ project, index }: { project: typeof projects[0]; index: n
               transition={{ duration: 0.4 }}
             />
 
-            {/* Project mockup preview */}
+            {/* Project mockup preview - Static image with hover effects */}
             <div className="absolute inset-6 flex items-center justify-center">
               <motion.div
-                animate={{ y: isHovered ? -15 : 0, scale: isHovered ? 1.02 : 1 }}
-                transition={{ duration: 0.4 }}
+                animate={{ 
+                  y: isHovered ? -15 : 0, 
+                  scale: isHovered ? 1.02 : 1,
+                  rotateX: isHovered ? 5 : 0,
+                }}
+                transition={{ duration: 0.4, ease: "easeOut" }}
+                style={{ transformPerspective: 1000 }}
                 className={`w-full ${isFeatured ? "max-w-[85%]" : "max-w-[90%]"} bg-card/95 backdrop-blur-sm rounded-xl border border-primary/30 shadow-2xl shadow-primary/10 overflow-hidden`}
               >
                 {/* Browser chrome */}
@@ -108,40 +97,23 @@ function ProjectCard({ project, index }: { project: typeof projects[0]; index: n
                   </div>
                 </div>
                 
-                {/* Project screenshot */}
-                {images.length > 0 ? (
-                  <div className={`relative ${isFeatured ? "aspect-video" : "aspect-[16/10]"}`}>
-                    <AnimatePresence mode="wait">
-                      <motion.div
-                        key={currentImageIndex}
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.3 }}
-                        className="absolute inset-0"
-                      >
-                        <Image
-                          src={images[currentImageIndex]}
-                          alt={`${project.title} preview`}
-                          fill
-                          className="object-cover object-top"
-                          sizes={isFeatured ? "(max-width: 768px) 100vw, 66vw" : "(max-width: 768px) 100vw, 33vw"}
-                        />
-                      </motion.div>
-                    </AnimatePresence>
-                    {/* Image dots indicator */}
-                    {images.length > 1 && (
-                      <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
-                        {images.map((_, idx) => (
-                          <div
-                            key={idx}
-                            className={`w-1.5 h-1.5 rounded-full transition-all ${
-                              currentImageIndex === idx ? "bg-primary w-4" : "bg-primary/40"
-                            }`}
-                          />
-                        ))}
-                      </div>
-                    )}
+                {/* Project screenshot - Static preview */}
+                {previewImage ? (
+                  <div className={`relative ${isFeatured ? "aspect-video" : "aspect-[16/10]"} overflow-hidden`}>
+                    <Image
+                      src={previewImage}
+                      alt={`${project.title} preview`}
+                      fill
+                      className="object-cover object-top transition-transform duration-700 group-hover:scale-105"
+                      sizes={isFeatured ? "(max-width: 768px) 100vw, 66vw" : "(max-width: 768px) 100vw, 33vw"}
+                    />
+                    {/* Hover shine effect */}
+                    <motion.div
+                      className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent"
+                      initial={{ x: "-100%" }}
+                      animate={{ x: isHovered ? "100%" : "-100%" }}
+                      transition={{ duration: 0.6, ease: "easeInOut" }}
+                    />
                   </div>
                 ) : (
                   /* Fallback content preview */
@@ -189,7 +161,7 @@ function ProjectCard({ project, index }: { project: typeof projects[0]; index: n
               <span className="text-xs font-bold text-primary">{project.metrics}</span>
             </motion.div>
 
-            {/* Hover overlay */}
+            {/* Hover overlay with CTA */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: isHovered ? 1 : 0 }}
@@ -212,10 +184,15 @@ function ProjectCard({ project, index }: { project: typeof projects[0]; index: n
               </motion.div>
             </motion.div>
 
-            {/* Glow effect */}
-            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
-              <div className="absolute inset-0 bg-gradient-to-t from-primary/10 to-transparent" />
-            </div>
+            {/* Glow effect on hover */}
+            <motion.div 
+              className="absolute inset-0 pointer-events-none"
+              animate={{ opacity: isHovered ? 1 : 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <div className="absolute inset-0 bg-gradient-to-t from-primary/20 to-transparent" />
+              <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 w-3/4 h-20 bg-primary/30 blur-3xl" />
+            </motion.div>
           </div>
 
           {/* Card Content */}
