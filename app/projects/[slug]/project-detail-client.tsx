@@ -972,66 +972,6 @@ function ProjectDetailContent({ project }: ProjectDetailClientProps) {
               </motion.div>
             </Link>
           </div>
-
-          {/* Premium Navigation Buttons */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="flex justify-center gap-6 mt-12"
-          >
-            <Link href={`/projects/${prevProject.slug}`}>
-              <motion.button
-                whileHover={{ scale: 1.05, x: -5 }}
-                whileTap={{ scale: 0.95 }}
-                className="group relative flex items-center gap-3 px-8 py-4 bg-card border border-primary/20 rounded-2xl hover:border-primary/50 transition-all overflow-hidden"
-              >
-                {/* Animated glow */}
-                <motion.div
-                  className="absolute inset-0 bg-gradient-to-r from-primary/10 to-transparent"
-                  initial={{ x: "-100%" }}
-                  whileHover={{ x: 0 }}
-                  transition={{ duration: 0.3 }}
-                />
-                <motion.div
-                  className="relative w-10 h-10 rounded-xl bg-primary/20 border border-primary/30 flex items-center justify-center"
-                  whileHover={{ scale: 1.1, rotate: -5 }}
-                >
-                  <ChevronLeft className="w-5 h-5 text-primary" />
-                </motion.div>
-                <div className="relative text-left">
-                  <span className="text-xs text-muted-foreground uppercase tracking-wider block">Previous</span>
-                  <span className="font-semibold group-hover:text-primary transition-colors">{prevProject.title}</span>
-                </div>
-              </motion.button>
-            </Link>
-
-            <Link href={`/projects/${nextProject.slug}`}>
-              <motion.button
-                whileHover={{ scale: 1.05, x: 5 }}
-                whileTap={{ scale: 0.95 }}
-                className="group relative flex items-center gap-3 px-8 py-4 bg-card border border-primary/20 rounded-2xl hover:border-primary/50 transition-all overflow-hidden"
-              >
-                {/* Animated glow */}
-                <motion.div
-                  className="absolute inset-0 bg-gradient-to-l from-primary/10 to-transparent"
-                  initial={{ x: "100%" }}
-                  whileHover={{ x: 0 }}
-                  transition={{ duration: 0.3 }}
-                />
-                <div className="relative text-right">
-                  <span className="text-xs text-muted-foreground uppercase tracking-wider block">Next</span>
-                  <span className="font-semibold group-hover:text-primary transition-colors">{nextProject.title}</span>
-                </div>
-                <motion.div
-                  className="relative w-10 h-10 rounded-xl bg-primary/20 border border-primary/30 flex items-center justify-center"
-                  whileHover={{ scale: 1.1, rotate: 5 }}
-                >
-                  <ChevronRight className="w-5 h-5 text-primary" />
-                </motion.div>
-              </motion.button>
-            </Link>
-          </motion.div>
         </div>
       </section>
 
