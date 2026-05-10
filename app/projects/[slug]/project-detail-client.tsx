@@ -606,78 +606,432 @@ function ProjectDetailContent({ project }: ProjectDetailClientProps) {
         </section>
       )}
 
-      {/* Project Navigation */}
-      <section className="py-16 border-t border-border/50 relative">
-        <div className="container mx-auto px-6">
+      {/* Continue Exploring - Premium Project Cards */}
+      <section className="py-24 relative overflow-hidden">
+        {/* Background elements */}
+        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-primary/5 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-primary/5 rounded-full blur-3xl pointer-events-none" />
+        
+        <div className="container mx-auto px-6 relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-center mb-12"
+            className="text-center mb-16"
           >
             <span className="text-primary text-sm font-medium uppercase tracking-widest">
               Continue Exploring
             </span>
-            <h2 className="text-2xl md:text-3xl font-bold mt-4">More Projects</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mt-4">More Projects</h2>
+            <p className="text-muted-foreground mt-4 max-w-2xl mx-auto">
+              Discover more case studies showcasing thoughtful design solutions
+            </p>
           </motion.div>
 
-          <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-            {/* Previous Project */}
+          {/* Project Cards Grid - Similar to Portfolio Section */}
+          <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+            {/* Previous Project Card */}
             <Link href={`/projects/${prevProject.slug}`}>
               <motion.div
-                initial={{ opacity: 0, x: -30 }}
-                whileInView={{ opacity: 1, x: 0 }}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                whileHover={{ scale: 1.02, x: -5 }}
-                className="group relative p-6 rounded-2xl bg-card border border-border/50 hover:border-primary/30 transition-all cursor-pointer overflow-hidden"
+                whileHover={{ y: -8 }}
+                transition={{ duration: 0.4 }}
+                className="group relative rounded-2xl overflow-hidden cursor-pointer"
               >
-                {/* Glow effect */}
-                <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                
-                <div className="relative z-10 flex items-center gap-4">
+                {/* Image Section */}
+                <div className={`relative aspect-[4/3] bg-gradient-to-br ${prevProject.color} border border-primary/20 overflow-hidden`}>
+                  {/* Animated background grid */}
+                  <div className="absolute inset-0 opacity-30">
+                    <div className="absolute inset-0" style={{
+                      backgroundImage: `linear-gradient(rgba(0,102,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(0,102,255,0.1) 1px, transparent 1px)`,
+                      backgroundSize: '30px 30px'
+                    }} />
+                  </div>
+
+                  {/* Floating geometric elements */}
                   <motion.div
-                    className="w-12 h-12 rounded-xl bg-primary/20 border border-primary/30 flex items-center justify-center"
-                    whileHover={{ scale: 1.1 }}
+                    className="absolute top-6 right-6 w-16 h-16 border border-primary/20 rounded-lg"
+                    whileHover={{ rotate: 45, scale: 1.1 }}
+                    transition={{ duration: 0.4 }}
+                  />
+                  <motion.div
+                    className="absolute bottom-12 left-6 w-12 h-12 border border-primary/15 rounded-full"
+                    whileHover={{ y: -10, scale: 1.2 }}
+                    transition={{ duration: 0.4 }}
+                  />
+
+                  {/* Project mockup preview */}
+                  <div className="absolute inset-6 flex items-center justify-center">
+                    <motion.div
+                      whileHover={{ y: -10, scale: 1.02, rotateX: 5 }}
+                      transition={{ duration: 0.4, ease: "easeOut" }}
+                      style={{ transformPerspective: 1000 }}
+                      className="w-full max-w-[90%] bg-card/95 backdrop-blur-sm rounded-xl border border-primary/30 shadow-2xl shadow-primary/10 overflow-hidden"
+                    >
+                      {/* Browser chrome */}
+                      <div className="flex items-center gap-2 px-3 py-2.5 border-b border-border/50 bg-muted/50">
+                        <div className="flex gap-1.5">
+                          <div className="w-2.5 h-2.5 rounded-full bg-red-500/60" />
+                          <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/60" />
+                          <div className="w-2.5 h-2.5 rounded-full bg-green-500/60" />
+                        </div>
+                        <div className="flex-1 mx-2">
+                          <div className="h-4 bg-background/60 rounded-md flex items-center px-2">
+                            <span className="text-[10px] text-muted-foreground truncate">{prevProject.slug}.app</span>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      {/* Project screenshot */}
+                      {prevProject.mockups[0]?.src ? (
+                        <div className="relative aspect-[16/10] overflow-hidden">
+                          <Image
+                            src={prevProject.mockups[0].src}
+                            alt={`${prevProject.title} preview`}
+                            fill
+                            className="object-cover object-top transition-transform duration-700 group-hover:scale-105"
+                            sizes="(max-width: 768px) 100vw, 50vw"
+                          />
+                          {/* Hover shine effect */}
+                          <motion.div
+                            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent"
+                            initial={{ x: "-100%" }}
+                            whileHover={{ x: "100%" }}
+                            transition={{ duration: 0.6, ease: "easeInOut" }}
+                          />
+                        </div>
+                      ) : (
+                        <div className="p-4 space-y-3">
+                          <div className="h-3 w-3/4 bg-primary/30 rounded" />
+                          <div className="h-3 w-1/2 bg-muted/50 rounded" />
+                          <div className="grid grid-cols-3 gap-2 mt-4">
+                            <div className="h-12 bg-primary/20 rounded" />
+                            <div className="h-12 bg-primary/15 rounded" />
+                            <div className="h-12 bg-primary/10 rounded" />
+                          </div>
+                        </div>
+                      )}
+                    </motion.div>
+                  </div>
+
+                  {/* Year badge */}
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="absolute top-4 left-4 flex items-center gap-1.5 px-3 py-1.5 bg-background/80 backdrop-blur-sm border border-primary/20 rounded-full"
                   >
-                    <ChevronLeft className="w-6 h-6 text-primary" />
+                    <Calendar className="w-3 h-3 text-primary" />
+                    <span className="text-xs font-medium text-muted-foreground">{prevProject.year}</span>
                   </motion.div>
-                  <div className="flex-1">
-                    <span className="text-xs text-muted-foreground uppercase tracking-wider">Previous Project</span>
-                    <h3 className="text-lg font-bold group-hover:text-primary transition-colors">{prevProject.title}</h3>
-                    <p className="text-sm text-muted-foreground">{prevProject.category}</p>
+
+                  {/* Metric badge */}
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="absolute top-4 right-4 px-3 py-1.5 bg-primary/20 backdrop-blur-sm border border-primary/30 rounded-full"
+                  >
+                    <span className="text-xs font-bold text-primary">{prevProject.metrics}</span>
+                  </motion.div>
+
+                  {/* Hover overlay with CTA */}
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    whileHover={{ opacity: 1 }}
+                    transition={{ duration: 0.3 }}
+                    className="absolute inset-0 bg-background/95 backdrop-blur-sm flex items-center justify-center"
+                  >
+                    <motion.div
+                      initial={{ y: 20, opacity: 0 }}
+                      whileHover={{ y: 0, opacity: 1 }}
+                      transition={{ duration: 0.3, delay: 0.1 }}
+                      className="text-center px-6"
+                    >
+                      <p className="text-muted-foreground text-sm mb-4 line-clamp-3">
+                        {prevProject.hook}
+                      </p>
+                      <span className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-xl font-medium shadow-lg shadow-primary/25 group-hover:shadow-primary/40 transition-shadow">
+                        <ChevronLeft className="w-4 h-4" />
+                        Previous Project
+                      </span>
+                    </motion.div>
+                  </motion.div>
+
+                  {/* Glow effect on hover */}
+                  <motion.div 
+                    className="absolute inset-0 pointer-events-none"
+                    initial={{ opacity: 0 }}
+                    whileHover={{ opacity: 1 }}
+                    transition={{ duration: 0.5 }}
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-t from-primary/20 to-transparent" />
+                    <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 w-3/4 h-20 bg-primary/30 blur-3xl" />
+                  </motion.div>
+                </div>
+
+                {/* Card Content */}
+                <div className="p-6 bg-card border border-t-0 border-primary/10 rounded-b-2xl">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-xs font-medium text-primary uppercase tracking-wider">
+                      {prevProject.category}
+                    </span>
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      <ChevronLeft className="w-4 h-4" />
+                      <span className="text-xs uppercase tracking-wider">Previous</span>
+                    </div>
+                  </div>
+                  <h3 className="text-xl font-bold mb-2 group-hover:text-primary transition-colors">
+                    {prevProject.title}
+                  </h3>
+                  <p className="text-muted-foreground text-sm mb-4 line-clamp-2">
+                    {prevProject.description}
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {prevProject.tags.slice(0, 3).map((tag) => (
+                      <span
+                        key={tag}
+                        className="text-xs px-2.5 py-1 bg-muted rounded-md text-muted-foreground"
+                      >
+                        {tag}
+                      </span>
+                    ))}
                   </div>
                 </div>
               </motion.div>
             </Link>
 
-            {/* Next Project */}
+            {/* Next Project Card */}
             <Link href={`/projects/${nextProject.slug}`}>
               <motion.div
-                initial={{ opacity: 0, x: 30 }}
-                whileInView={{ opacity: 1, x: 0 }}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                whileHover={{ scale: 1.02, x: 5 }}
-                className="group relative p-6 rounded-2xl bg-card border border-border/50 hover:border-primary/30 transition-all cursor-pointer overflow-hidden"
+                transition={{ delay: 0.1 }}
+                whileHover={{ y: -8 }}
+                className="group relative rounded-2xl overflow-hidden cursor-pointer"
               >
-                {/* Glow effect */}
-                <div className="absolute inset-0 bg-gradient-to-l from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                
-                <div className="relative z-10 flex items-center gap-4">
-                  <div className="flex-1 text-right">
-                    <span className="text-xs text-muted-foreground uppercase tracking-wider">Next Project</span>
-                    <h3 className="text-lg font-bold group-hover:text-primary transition-colors">{nextProject.title}</h3>
-                    <p className="text-sm text-muted-foreground">{nextProject.category}</p>
+                {/* Image Section */}
+                <div className={`relative aspect-[4/3] bg-gradient-to-br ${nextProject.color} border border-primary/20 overflow-hidden`}>
+                  {/* Animated background grid */}
+                  <div className="absolute inset-0 opacity-30">
+                    <div className="absolute inset-0" style={{
+                      backgroundImage: `linear-gradient(rgba(0,102,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(0,102,255,0.1) 1px, transparent 1px)`,
+                      backgroundSize: '30px 30px'
+                    }} />
                   </div>
+
+                  {/* Floating geometric elements */}
                   <motion.div
-                    className="w-12 h-12 rounded-xl bg-primary/20 border border-primary/30 flex items-center justify-center"
-                    whileHover={{ scale: 1.1 }}
+                    className="absolute top-6 right-6 w-16 h-16 border border-primary/20 rounded-lg"
+                    whileHover={{ rotate: 45, scale: 1.1 }}
+                    transition={{ duration: 0.4 }}
+                  />
+                  <motion.div
+                    className="absolute bottom-12 left-6 w-12 h-12 border border-primary/15 rounded-full"
+                    whileHover={{ y: -10, scale: 1.2 }}
+                    transition={{ duration: 0.4 }}
+                  />
+
+                  {/* Project mockup preview */}
+                  <div className="absolute inset-6 flex items-center justify-center">
+                    <motion.div
+                      whileHover={{ y: -10, scale: 1.02, rotateX: 5 }}
+                      transition={{ duration: 0.4, ease: "easeOut" }}
+                      style={{ transformPerspective: 1000 }}
+                      className="w-full max-w-[90%] bg-card/95 backdrop-blur-sm rounded-xl border border-primary/30 shadow-2xl shadow-primary/10 overflow-hidden"
+                    >
+                      {/* Browser chrome */}
+                      <div className="flex items-center gap-2 px-3 py-2.5 border-b border-border/50 bg-muted/50">
+                        <div className="flex gap-1.5">
+                          <div className="w-2.5 h-2.5 rounded-full bg-red-500/60" />
+                          <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/60" />
+                          <div className="w-2.5 h-2.5 rounded-full bg-green-500/60" />
+                        </div>
+                        <div className="flex-1 mx-2">
+                          <div className="h-4 bg-background/60 rounded-md flex items-center px-2">
+                            <span className="text-[10px] text-muted-foreground truncate">{nextProject.slug}.app</span>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      {/* Project screenshot */}
+                      {nextProject.mockups[0]?.src ? (
+                        <div className="relative aspect-[16/10] overflow-hidden">
+                          <Image
+                            src={nextProject.mockups[0].src}
+                            alt={`${nextProject.title} preview`}
+                            fill
+                            className="object-cover object-top transition-transform duration-700 group-hover:scale-105"
+                            sizes="(max-width: 768px) 100vw, 50vw"
+                          />
+                          {/* Hover shine effect */}
+                          <motion.div
+                            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent"
+                            initial={{ x: "-100%" }}
+                            whileHover={{ x: "100%" }}
+                            transition={{ duration: 0.6, ease: "easeInOut" }}
+                          />
+                        </div>
+                      ) : (
+                        <div className="p-4 space-y-3">
+                          <div className="h-3 w-3/4 bg-primary/30 rounded" />
+                          <div className="h-3 w-1/2 bg-muted/50 rounded" />
+                          <div className="grid grid-cols-3 gap-2 mt-4">
+                            <div className="h-12 bg-primary/20 rounded" />
+                            <div className="h-12 bg-primary/15 rounded" />
+                            <div className="h-12 bg-primary/10 rounded" />
+                          </div>
+                        </div>
+                      )}
+                    </motion.div>
+                  </div>
+
+                  {/* Year badge */}
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="absolute top-4 left-4 flex items-center gap-1.5 px-3 py-1.5 bg-background/80 backdrop-blur-sm border border-primary/20 rounded-full"
                   >
-                    <ChevronRight className="w-6 h-6 text-primary" />
+                    <Calendar className="w-3 h-3 text-primary" />
+                    <span className="text-xs font-medium text-muted-foreground">{nextProject.year}</span>
                   </motion.div>
+
+                  {/* Metric badge */}
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="absolute top-4 right-4 px-3 py-1.5 bg-primary/20 backdrop-blur-sm border border-primary/30 rounded-full"
+                  >
+                    <span className="text-xs font-bold text-primary">{nextProject.metrics}</span>
+                  </motion.div>
+
+                  {/* Hover overlay with CTA */}
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    whileHover={{ opacity: 1 }}
+                    transition={{ duration: 0.3 }}
+                    className="absolute inset-0 bg-background/95 backdrop-blur-sm flex items-center justify-center"
+                  >
+                    <motion.div
+                      initial={{ y: 20, opacity: 0 }}
+                      whileHover={{ y: 0, opacity: 1 }}
+                      transition={{ duration: 0.3, delay: 0.1 }}
+                      className="text-center px-6"
+                    >
+                      <p className="text-muted-foreground text-sm mb-4 line-clamp-3">
+                        {nextProject.hook}
+                      </p>
+                      <span className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-xl font-medium shadow-lg shadow-primary/25 group-hover:shadow-primary/40 transition-shadow">
+                        Next Project
+                        <ChevronRight className="w-4 h-4" />
+                      </span>
+                    </motion.div>
+                  </motion.div>
+
+                  {/* Glow effect on hover */}
+                  <motion.div 
+                    className="absolute inset-0 pointer-events-none"
+                    initial={{ opacity: 0 }}
+                    whileHover={{ opacity: 1 }}
+                    transition={{ duration: 0.5 }}
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-t from-primary/20 to-transparent" />
+                    <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 w-3/4 h-20 bg-primary/30 blur-3xl" />
+                  </motion.div>
+                </div>
+
+                {/* Card Content */}
+                <div className="p-6 bg-card border border-t-0 border-primary/10 rounded-b-2xl">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-xs font-medium text-primary uppercase tracking-wider">
+                      {nextProject.category}
+                    </span>
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      <span className="text-xs uppercase tracking-wider">Next</span>
+                      <ChevronRight className="w-4 h-4" />
+                    </div>
+                  </div>
+                  <h3 className="text-xl font-bold mb-2 group-hover:text-primary transition-colors">
+                    {nextProject.title}
+                  </h3>
+                  <p className="text-muted-foreground text-sm mb-4 line-clamp-2">
+                    {nextProject.description}
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {nextProject.tags.slice(0, 3).map((tag) => (
+                      <span
+                        key={tag}
+                        className="text-xs px-2.5 py-1 bg-muted rounded-md text-muted-foreground"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
                 </div>
               </motion.div>
             </Link>
           </div>
+
+          {/* Premium Navigation Buttons */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="flex justify-center gap-6 mt-12"
+          >
+            <Link href={`/projects/${prevProject.slug}`}>
+              <motion.button
+                whileHover={{ scale: 1.05, x: -5 }}
+                whileTap={{ scale: 0.95 }}
+                className="group relative flex items-center gap-3 px-8 py-4 bg-card border border-primary/20 rounded-2xl hover:border-primary/50 transition-all overflow-hidden"
+              >
+                {/* Animated glow */}
+                <motion.div
+                  className="absolute inset-0 bg-gradient-to-r from-primary/10 to-transparent"
+                  initial={{ x: "-100%" }}
+                  whileHover={{ x: 0 }}
+                  transition={{ duration: 0.3 }}
+                />
+                <motion.div
+                  className="relative w-10 h-10 rounded-xl bg-primary/20 border border-primary/30 flex items-center justify-center"
+                  whileHover={{ scale: 1.1, rotate: -5 }}
+                >
+                  <ChevronLeft className="w-5 h-5 text-primary" />
+                </motion.div>
+                <div className="relative text-left">
+                  <span className="text-xs text-muted-foreground uppercase tracking-wider block">Previous</span>
+                  <span className="font-semibold group-hover:text-primary transition-colors">{prevProject.title}</span>
+                </div>
+              </motion.button>
+            </Link>
+
+            <Link href={`/projects/${nextProject.slug}`}>
+              <motion.button
+                whileHover={{ scale: 1.05, x: 5 }}
+                whileTap={{ scale: 0.95 }}
+                className="group relative flex items-center gap-3 px-8 py-4 bg-card border border-primary/20 rounded-2xl hover:border-primary/50 transition-all overflow-hidden"
+              >
+                {/* Animated glow */}
+                <motion.div
+                  className="absolute inset-0 bg-gradient-to-l from-primary/10 to-transparent"
+                  initial={{ x: "100%" }}
+                  whileHover={{ x: 0 }}
+                  transition={{ duration: 0.3 }}
+                />
+                <div className="relative text-right">
+                  <span className="text-xs text-muted-foreground uppercase tracking-wider block">Next</span>
+                  <span className="font-semibold group-hover:text-primary transition-colors">{nextProject.title}</span>
+                </div>
+                <motion.div
+                  className="relative w-10 h-10 rounded-xl bg-primary/20 border border-primary/30 flex items-center justify-center"
+                  whileHover={{ scale: 1.1, rotate: 5 }}
+                >
+                  <ChevronRight className="w-5 h-5 text-primary" />
+                </motion.div>
+              </motion.button>
+            </Link>
+          </motion.div>
         </div>
       </section>
 
