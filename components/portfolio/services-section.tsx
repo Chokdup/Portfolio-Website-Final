@@ -1,7 +1,7 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
-import { motion, AnimatePresence } from "framer-motion"
+import { useRef, useState, useEffect } from "react"
+import { motion, useScroll, useTransform, useInView, AnimatePresence } from "framer-motion"
 import {
   Users,
   MousePointerClick,
@@ -17,327 +17,877 @@ import {
   Zap,
   Target,
   ArrowUpRight,
-  CheckCircle2,
   Activity,
+  ChevronDown,
   Play,
-  Pause,
+  Shield,
+  Sparkles,
+  LineChart,
+  PieChart,
+  Gauge,
+  Layout,
+  Code2,
+  Figma,
+  CheckCircle2,
+  ArrowRight,
 } from "lucide-react"
 
-const services = [
+const expertiseAreas = [
   {
     id: "retention",
     title: "User Retention",
+    subtitle: "Keep Users Coming Back",
+    description: "I design experiences that transform first-time visitors into loyal users through strategic engagement patterns, personalized journeys, and data-driven optimization.",
+    stats: [
+      { label: "Avg Retention Lift", value: "+47%", icon: TrendingUp },
+      { label: "User Engagement", value: "3.2x", icon: Activity },
+      { label: "Churn Reduction", value: "-38%", icon: Shield },
+    ],
+    features: ["Cohort Analysis", "Behavioral Triggers", "Re-engagement Flows", "Loyalty Systems"],
     icon: Users,
-    description: "Designing interfaces that keep users coming back through intuitive workflows and delightful experiences.",
-    accentColor: "from-blue-500 to-cyan-400",
-    bgGlow: "bg-blue-500/20",
+  },
+  {
+    id: "onboarding",
+    title: "Onboarding Experience", 
+    subtitle: "First Impressions Matter",
+    description: "I craft frictionless onboarding flows that guide users to their 'aha moment' faster, reducing drop-off and accelerating time-to-value.",
+    stats: [
+      { label: "Completion Rate", value: "94%", icon: CheckCircle2 },
+      { label: "Time to Value", value: "-62%", icon: Zap },
+      { label: "Activation Rate", value: "+85%", icon: Target },
+    ],
+    features: ["Progressive Disclosure", "Contextual Guidance", "Milestone Tracking", "Personalized Paths"],
+    icon: Play,
+  },
+  {
+    id: "conversion",
+    title: "Conversion Flow",
+    subtitle: "Turn Visitors into Customers",
+    description: "I optimize every touchpoint in your conversion funnel, eliminating friction and creating compelling pathways that drive action.",
+    stats: [
+      { label: "Conversion Lift", value: "+156%", icon: TrendingUp },
+      { label: "Cart Recovery", value: "73%", icon: ArrowUpRight },
+      { label: "Bounce Reduction", value: "-45%", icon: Shield },
+    ],
+    features: ["Funnel Optimization", "A/B Testing", "Micro-interactions", "Trust Signals"],
+    icon: MousePointerClick,
+  },
+  {
+    id: "dashboard",
+    title: "Dashboard UX",
+    subtitle: "Data Made Actionable",
+    description: "I transform complex data into intuitive dashboards that empower users to make informed decisions at a glance.",
+    stats: [
+      { label: "Task Efficiency", value: "+78%", icon: Gauge },
+      { label: "Data Clarity", value: "96%", icon: BarChart3 },
+      { label: "User Satisfaction", value: "4.9/5", icon: Star },
+    ],
+    features: ["Information Hierarchy", "Real-time Visualization", "Custom Widgets", "Smart Alerts"],
+    icon: BarChart3,
   },
   {
     id: "usability",
     title: "Product Usability",
-    icon: MousePointerClick,
-    description: "Enhancing product usability through user research, testing, and iterative design improvements.",
-    accentColor: "from-emerald-500 to-teal-400",
-    bgGlow: "bg-emerald-500/20",
+    subtitle: "Intuitive by Design",
+    description: "I conduct deep usability research and testing to identify pain points and create products that feel effortless to use.",
+    stats: [
+      { label: "Task Success", value: "98%", icon: CheckCircle2 },
+      { label: "Error Reduction", value: "-67%", icon: Shield },
+      { label: "Learning Curve", value: "-54%", icon: TrendingUp },
+    ],
+    features: ["User Research", "Heuristic Analysis", "Usability Testing", "Iterative Design"],
+    icon: Target,
   },
   {
     id: "systems",
     title: "Design Systems",
+    subtitle: "Scale with Consistency",
+    description: "I build comprehensive design systems that ensure visual coherence, accelerate development, and maintain brand integrity at scale.",
+    stats: [
+      { label: "Dev Speed", value: "+3x", icon: Zap },
+      { label: "Consistency", value: "100%", icon: Layers },
+      { label: "Components", value: "200+", icon: Layout },
+    ],
+    features: ["Component Library", "Design Tokens", "Documentation", "Version Control"],
     icon: Palette,
-    description: "Creating scalable design systems that ensure consistency and accelerate product development.",
-    accentColor: "from-violet-500 to-purple-400",
-    bgGlow: "bg-violet-500/20",
   },
   {
     id: "mobile",
     title: "Mobile Experience",
+    subtitle: "Thumb-Friendly Design",
+    description: "I design mobile-first experiences that leverage native patterns and gestures to create seamless cross-device journeys.",
+    stats: [
+      { label: "Mobile Conv.", value: "+89%", icon: TrendingUp },
+      { label: "App Rating", value: "4.8★", icon: Star },
+      { label: "Session Time", value: "+2.4x", icon: Activity },
+    ],
+    features: ["Gesture Design", "Responsive Layouts", "Native Patterns", "Performance Focus"],
     icon: Smartphone,
-    description: "Designing responsive mobile interfaces that provide seamless experiences across all devices.",
-    accentColor: "from-rose-500 to-pink-400",
-    bgGlow: "bg-rose-500/20",
   },
   {
     id: "webapp",
     title: "Web Applications",
+    subtitle: "Complex Made Simple",
+    description: "I architect large-scale web applications that handle complexity gracefully while maintaining exceptional user experience.",
+    stats: [
+      { label: "User Efficiency", value: "+64%", icon: Gauge },
+      { label: "Feature Adoption", value: "92%", icon: CheckCircle2 },
+      { label: "Support Tickets", value: "-71%", icon: Shield },
+    ],
+    features: ["Information Architecture", "State Management", "Accessibility", "Performance"],
     icon: Globe,
-    description: "Crafting complex web applications that are powerful yet simple to use for diverse user bases.",
-    accentColor: "from-amber-500 to-orange-400",
-    bgGlow: "bg-amber-500/20",
   },
   {
     id: "engagement",
     title: "User Engagement",
+    subtitle: "Create Lasting Connections",
+    description: "I design engagement systems that create meaningful interactions, driving habitual usage and emotional connection with your product.",
+    stats: [
+      { label: "Daily Active", value: "+127%", icon: Users },
+      { label: "Feature Usage", value: "4.1x", icon: Activity },
+      { label: "NPS Score", value: "+42", icon: Heart },
+    ],
+    features: ["Gamification", "Social Features", "Notifications", "Rewards Systems"],
     icon: Heart,
-    description: "Designing features that drive meaningful user engagement and create lasting product loyalty.",
-    accentColor: "from-fuchsia-500 to-pink-400",
-    bgGlow: "bg-fuchsia-500/20",
   },
 ]
 
-const AUTO_ROTATE_INTERVAL = 5000 // 5 seconds per category
-
-// Realistic UI Visual Components
+// Premium Visual Components for each expertise area
 function RetentionVisual() {
   return (
-    <div className="w-full h-full p-4 flex flex-col">
-      {/* Header with stats */}
-      <div className="flex items-center justify-between mb-4">
-        <div>
-          <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">Retention Rate</div>
-          <div className="flex items-baseline gap-2">
-            <span className="text-2xl font-bold text-primary">87.4%</span>
-            <span className="text-xs text-emerald-500 flex items-center gap-0.5">
-              <TrendingUp className="w-3 h-3" />+12.3%
-            </span>
+    <div className="relative w-full h-full">
+      {/* Main dashboard mockup */}
+      <motion.div
+        initial={{ opacity: 0, y: 40 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.8 }}
+        className="absolute inset-0 bg-card/90 backdrop-blur-sm rounded-2xl border border-primary/20 overflow-hidden shadow-2xl shadow-primary/10"
+      >
+        {/* Dashboard header */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-border/50">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center">
+              <Users className="w-4 h-4 text-primary" />
+            </div>
+            <div>
+              <div className="text-sm font-semibold">Retention Analytics</div>
+              <div className="text-xs text-muted-foreground">Real-time cohort tracking</div>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            {["7D", "30D", "90D"].map((period, i) => (
+              <div
+                key={period}
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                  i === 1 ? "bg-primary text-primary-foreground" : "bg-muted/50 text-muted-foreground hover:bg-muted"
+                }`}
+              >
+                {period}
+              </div>
+            ))}
           </div>
         </div>
-        <div className="flex gap-1">
-          {["7D", "30D", "90D"].map((label, i) => (
-            <div
-              key={label}
-              className={`px-2 py-1 rounded text-[10px] font-medium ${
-                i === 1 ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
-              }`}
+
+        {/* Main chart area */}
+        <div className="p-6">
+          <div className="flex items-end justify-between mb-6">
+            <div>
+              <div className="text-3xl font-bold mb-1">87.4%</div>
+              <div className="flex items-center gap-2 text-sm text-emerald-500">
+                <TrendingUp className="w-4 h-4" />
+                <span>+12.3% vs last month</span>
+              </div>
+            </div>
+            <div className="flex items-center gap-4">
+              {[
+                { label: "Active Users", value: "12.4K" },
+                { label: "Returning", value: "8.2K" },
+                { label: "New", value: "4.2K" },
+              ].map((stat) => (
+                <div key={stat.label} className="text-right">
+                  <div className="text-lg font-semibold">{stat.value}</div>
+                  <div className="text-xs text-muted-foreground">{stat.label}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Animated chart bars */}
+          <div className="flex items-end gap-2 h-32 mb-4">
+            {[65, 72, 68, 78, 82, 75, 87, 84, 91, 88, 94, 87, 89, 92, 85].map((value, i) => (
+              <motion.div
+                key={i}
+                className="flex-1 bg-gradient-to-t from-primary to-primary/40 rounded-t-md relative group"
+                initial={{ height: 0 }}
+                whileInView={{ height: `${value}%` }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.05, duration: 0.6, ease: "easeOut" }}
+              >
+                <motion.div
+                  className="absolute -top-8 left-1/2 -translate-x-1/2 px-2 py-1 bg-primary text-primary-foreground text-[10px] font-medium rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap"
+                >
+                  {value}%
+                </motion.div>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Cohort grid */}
+          <div className="grid grid-cols-4 gap-3 pt-4 border-t border-border/50">
+            {[
+              { cohort: "Week 1", retention: "94%", color: "bg-emerald-500/20 text-emerald-500" },
+              { cohort: "Week 2", retention: "82%", color: "bg-primary/20 text-primary" },
+              { cohort: "Week 4", retention: "71%", color: "bg-amber-500/20 text-amber-500" },
+              { cohort: "Week 8", retention: "63%", color: "bg-rose-500/20 text-rose-500" },
+            ].map((item) => (
+              <motion.div
+                key={item.cohort}
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                className="p-3 rounded-xl bg-muted/30 border border-border/50"
+              >
+                <div className="text-xs text-muted-foreground mb-1">{item.cohort}</div>
+                <div className={`text-lg font-bold ${item.color.split(" ")[1]}`}>{item.retention}</div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Floating notification cards */}
+      <motion.div
+        initial={{ opacity: 0, x: 40 }}
+        whileInView={{ opacity: 1, x: 0 }}
+        viewport={{ once: true }}
+        transition={{ delay: 0.6, duration: 0.6 }}
+        className="absolute -right-4 top-16 w-56 p-3 bg-card/95 backdrop-blur-sm rounded-xl border border-primary/30 shadow-xl"
+      >
+        <div className="flex items-center gap-2 mb-2">
+          <div className="w-6 h-6 rounded-full bg-emerald-500/20 flex items-center justify-center">
+            <TrendingUp className="w-3 h-3 text-emerald-500" />
+          </div>
+          <span className="text-xs font-medium">Retention Alert</span>
+        </div>
+        <p className="text-[11px] text-muted-foreground">User cohort from March showing 23% higher retention rate</p>
+      </motion.div>
+    </div>
+  )
+}
+
+function OnboardingVisual() {
+  return (
+    <div className="relative w-full h-full">
+      {/* Main onboarding flow mockup */}
+      <motion.div
+        initial={{ opacity: 0, y: 40 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.8 }}
+        className="absolute inset-0 bg-card/90 backdrop-blur-sm rounded-2xl border border-primary/20 overflow-hidden shadow-2xl shadow-primary/10"
+      >
+        {/* Progress header */}
+        <div className="px-6 py-4 border-b border-border/50">
+          <div className="flex items-center justify-between mb-3">
+            <div className="text-sm font-medium">Getting Started</div>
+            <div className="text-xs text-primary">Step 2 of 4</div>
+          </div>
+          <div className="h-2 bg-muted rounded-full overflow-hidden">
+            <motion.div
+              className="h-full bg-gradient-to-r from-primary to-cyan-400 rounded-full"
+              initial={{ width: 0 }}
+              whileInView={{ width: "50%" }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.4, duration: 1 }}
+            />
+          </div>
+        </div>
+
+        {/* Onboarding content */}
+        <div className="p-6">
+          <div className="flex items-start gap-4 mb-6">
+            <motion.div
+              initial={{ scale: 0 }}
+              whileInView={{ scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.5, type: "spring" }}
+              className="w-12 h-12 rounded-2xl bg-primary/20 border border-primary/30 flex items-center justify-center flex-shrink-0"
             >
-              {label}
+              <Sparkles className="w-6 h-6 text-primary" />
+            </motion.div>
+            <div>
+              <h3 className="text-lg font-semibold mb-1">Tell us about yourself</h3>
+              <p className="text-sm text-muted-foreground">We&apos;ll personalize your experience based on your goals</p>
+            </div>
+          </div>
+
+          {/* Options */}
+          <div className="space-y-3 mb-6">
+            {[
+              { label: "Startup Founder", desc: "Building a new product", selected: true },
+              { label: "Product Manager", desc: "Improving existing products", selected: false },
+              { label: "Designer", desc: "Creating user experiences", selected: false },
+            ].map((option, i) => (
+              <motion.div
+                key={option.label}
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.6 + i * 0.1 }}
+                className={`p-4 rounded-xl border-2 transition-all cursor-pointer ${
+                  option.selected
+                    ? "border-primary bg-primary/10"
+                    : "border-border/50 hover:border-primary/30"
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="text-sm font-medium">{option.label}</div>
+                    <div className="text-xs text-muted-foreground">{option.desc}</div>
+                  </div>
+                  {option.selected && (
+                    <motion.div
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      className="w-6 h-6 rounded-full bg-primary flex items-center justify-center"
+                    >
+                      <CheckCircle2 className="w-4 h-4 text-primary-foreground" />
+                    </motion.div>
+                  )}
+                </div>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Continue button */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 1 }}
+            className="flex items-center justify-between"
+          >
+            <button className="text-sm text-muted-foreground hover:text-foreground transition-colors">Skip for now</button>
+            <button className="px-6 py-2.5 bg-primary text-primary-foreground rounded-xl text-sm font-medium flex items-center gap-2 shadow-lg shadow-primary/25">
+              Continue
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          </motion.div>
+        </div>
+      </motion.div>
+
+      {/* Floating milestone card */}
+      <motion.div
+        initial={{ opacity: 0, x: -40 }}
+        whileInView={{ opacity: 1, x: 0 }}
+        viewport={{ once: true }}
+        transition={{ delay: 0.8, duration: 0.6 }}
+        className="absolute -left-4 bottom-20 w-48 p-3 bg-card/95 backdrop-blur-sm rounded-xl border border-emerald-500/30 shadow-xl"
+      >
+        <div className="flex items-center gap-2 mb-2">
+          <div className="w-6 h-6 rounded-full bg-emerald-500/20 flex items-center justify-center">
+            <CheckCircle2 className="w-3 h-3 text-emerald-500" />
+          </div>
+          <span className="text-xs font-medium text-emerald-500">Milestone reached!</span>
+        </div>
+        <p className="text-[11px] text-muted-foreground">Profile setup complete - 94% success rate</p>
+      </motion.div>
+    </div>
+  )
+}
+
+function ConversionVisual() {
+  return (
+    <div className="relative w-full h-full">
+      <motion.div
+        initial={{ opacity: 0, y: 40 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.8 }}
+        className="absolute inset-0 bg-card/90 backdrop-blur-sm rounded-2xl border border-primary/20 overflow-hidden shadow-2xl shadow-primary/10"
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-border/50">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-emerald-500/20 flex items-center justify-center">
+              <LineChart className="w-4 h-4 text-emerald-500" />
+            </div>
+            <div>
+              <div className="text-sm font-semibold">Conversion Funnel</div>
+              <div className="text-xs text-muted-foreground">Optimized checkout flow</div>
+            </div>
+          </div>
+          <div className="px-3 py-1.5 bg-emerald-500/20 rounded-full">
+            <span className="text-xs font-medium text-emerald-500">+156% conversion</span>
+          </div>
+        </div>
+
+        {/* Funnel visualization */}
+        <div className="p-6">
+          <div className="space-y-3">
+            {[
+              { stage: "Visitors", value: "24,500", percent: 100, color: "bg-primary" },
+              { stage: "Product Views", value: "18,200", percent: 74, color: "bg-primary/80" },
+              { stage: "Add to Cart", value: "8,400", percent: 34, color: "bg-primary/60" },
+              { stage: "Checkout", value: "5,100", percent: 21, color: "bg-primary/50" },
+              { stage: "Purchase", value: "4,200", percent: 17, color: "bg-emerald-500" },
+            ].map((item, i) => (
+              <motion.div
+                key={item.stage}
+                initial={{ opacity: 0, x: -30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.3 + i * 0.1 }}
+                className="relative"
+              >
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-xs text-muted-foreground">{item.stage}</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-semibold">{item.value}</span>
+                    <span className="text-xs text-muted-foreground">{item.percent}%</span>
+                  </div>
+                </div>
+                <div className="h-3 bg-muted/30 rounded-full overflow-hidden">
+                  <motion.div
+                    className={`h-full ${item.color} rounded-full`}
+                    initial={{ width: 0 }}
+                    whileInView={{ width: `${item.percent}%` }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.5 + i * 0.1, duration: 0.8 }}
+                  />
+                </div>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Conversion stats */}
+          <div className="grid grid-cols-3 gap-3 mt-6 pt-4 border-t border-border/50">
+            {[
+              { label: "Avg. Order", value: "$127", icon: TrendingUp },
+              { label: "Cart Recovery", value: "73%", icon: ArrowUpRight },
+              { label: "Time to Purchase", value: "4.2m", icon: Activity },
+            ].map((stat, i) => (
+              <motion.div
+                key={stat.label}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.8 + i * 0.1 }}
+                className="text-center p-3 bg-muted/20 rounded-xl"
+              >
+                <stat.icon className="w-4 h-4 text-primary mx-auto mb-1" />
+                <div className="text-lg font-bold">{stat.value}</div>
+                <div className="text-[10px] text-muted-foreground">{stat.label}</div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </motion.div>
+    </div>
+  )
+}
+
+function DashboardVisual() {
+  return (
+    <div className="relative w-full h-full">
+      <motion.div
+        initial={{ opacity: 0, y: 40 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.8 }}
+        className="absolute inset-0 bg-card/90 backdrop-blur-sm rounded-2xl border border-primary/20 overflow-hidden shadow-2xl shadow-primary/10"
+      >
+        {/* Dashboard header */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-border/50">
+          <div className="flex items-center gap-6">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center">
+                <Zap className="w-4 h-4 text-primary" />
+              </div>
+              <span className="text-sm font-semibold">Analytics Dashboard</span>
+            </div>
+            <div className="flex gap-2">
+              {["Overview", "Users", "Revenue"].map((tab, i) => (
+                <div
+                  key={tab}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-medium ${
+                    i === 0 ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted/50"
+                  }`}
+                >
+                  {tab}
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            <Bell className="w-4 h-4 text-muted-foreground" />
+            <div className="w-7 h-7 rounded-full bg-primary/20" />
+          </div>
+        </div>
+
+        {/* Dashboard content */}
+        <div className="p-6">
+          {/* Stats row */}
+          <div className="grid grid-cols-4 gap-4 mb-6">
+            {[
+              { label: "Revenue", value: "$48.2K", change: "+12%", color: "text-emerald-500" },
+              { label: "Users", value: "12.4K", change: "+8%", color: "text-primary" },
+              { label: "Orders", value: "842", change: "+23%", color: "text-amber-500" },
+              { label: "Conversion", value: "3.2%", change: "+0.4%", color: "text-rose-500" },
+            ].map((stat, i) => (
+              <motion.div
+                key={stat.label}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.3 + i * 0.1 }}
+                className="p-4 bg-muted/20 rounded-xl border border-border/50"
+              >
+                <div className="text-xs text-muted-foreground mb-1">{stat.label}</div>
+                <div className="text-xl font-bold mb-1">{stat.value}</div>
+                <div className={`text-xs ${stat.color}`}>{stat.change}</div>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Chart */}
+          <div className="bg-muted/10 rounded-xl border border-border/50 p-4">
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-sm font-medium">Revenue Overview</span>
+              <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                <span className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-primary" /> This month</span>
+                <span className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-primary/40" /> Last month</span>
+              </div>
+            </div>
+            <div className="flex items-end gap-2 h-24">
+              {[45, 62, 38, 72, 55, 68, 82, 75, 88, 65, 78, 92].map((value, i) => (
+                <div key={i} className="flex-1 flex flex-col gap-1">
+                  <motion.div
+                    className="bg-gradient-to-t from-primary to-primary/50 rounded-t"
+                    initial={{ height: 0 }}
+                    whileInView={{ height: `${value}%` }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.5 + i * 0.05, duration: 0.6 }}
+                  />
+                  <motion.div
+                    className="bg-primary/30 rounded-t"
+                    initial={{ height: 0 }}
+                    whileInView={{ height: `${value * 0.7}%` }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.6 + i * 0.05, duration: 0.6 }}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Floating widget */}
+      <motion.div
+        initial={{ opacity: 0, x: 40 }}
+        whileInView={{ opacity: 1, x: 0 }}
+        viewport={{ once: true }}
+        transition={{ delay: 0.8, duration: 0.6 }}
+        className="absolute -right-4 top-24 w-44 p-3 bg-card/95 backdrop-blur-sm rounded-xl border border-primary/30 shadow-xl"
+      >
+        <div className="flex items-center gap-2 mb-2">
+          <PieChart className="w-4 h-4 text-primary" />
+          <span className="text-xs font-medium">Traffic Sources</span>
+        </div>
+        <div className="space-y-1.5">
+          {[
+            { source: "Organic", value: "42%" },
+            { source: "Direct", value: "28%" },
+            { source: "Referral", value: "30%" },
+          ].map((item) => (
+            <div key={item.source} className="flex items-center justify-between text-[10px]">
+              <span className="text-muted-foreground">{item.source}</span>
+              <span className="font-medium">{item.value}</span>
             </div>
           ))}
         </div>
-      </div>
-
-      {/* Chart */}
-      <div className="flex-1 flex items-end gap-1.5 pb-2">
-        {[65, 72, 68, 78, 82, 75, 87, 84, 91, 88, 94, 87].map((value, i) => (
-          <motion.div
-            key={i}
-            className="flex-1 bg-gradient-to-t from-primary/60 to-primary/20 rounded-t"
-            initial={{ height: 0 }}
-            animate={{ height: `${value}%` }}
-            transition={{ delay: i * 0.05, duration: 0.4, ease: "easeOut" }}
-          />
-        ))}
-      </div>
-
-      {/* User cohorts */}
-      <div className="grid grid-cols-3 gap-2 pt-3 border-t border-border/50">
-        {[
-          { label: "New Users", value: "2.4k", trend: "+18%" },
-          { label: "Returning", value: "8.1k", trend: "+24%" },
-          { label: "Active", value: "6.3k", trend: "+15%" },
-        ].map((stat) => (
-          <div key={stat.label} className="text-center">
-            <div className="text-xs font-semibold">{stat.value}</div>
-            <div className="text-[9px] text-muted-foreground">{stat.label}</div>
-          </div>
-        ))}
-      </div>
+      </motion.div>
     </div>
   )
 }
 
 function UsabilityVisual() {
   return (
-    <div className="w-full h-full p-4 flex flex-col">
-      {/* Heatmap header */}
-      <div className="flex items-center justify-between mb-3">
-        <div className="text-[10px] text-muted-foreground uppercase tracking-wider">Click Heatmap Analysis</div>
-        <div className="flex items-center gap-1">
-          <div className="w-2 h-2 rounded-full bg-red-500" />
-          <div className="w-2 h-2 rounded-full bg-yellow-500" />
-          <div className="w-2 h-2 rounded-full bg-green-500" />
+    <div className="relative w-full h-full">
+      <motion.div
+        initial={{ opacity: 0, y: 40 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.8 }}
+        className="absolute inset-0 bg-card/90 backdrop-blur-sm rounded-2xl border border-primary/20 overflow-hidden shadow-2xl shadow-primary/10"
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-border/50">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-amber-500/20 flex items-center justify-center">
+              <Target className="w-4 h-4 text-amber-500" />
+            </div>
+            <div>
+              <div className="text-sm font-semibold">Usability Testing</div>
+              <div className="text-xs text-muted-foreground">Heatmap & click analysis</div>
+            </div>
+          </div>
         </div>
-      </div>
 
-      {/* Mock interface with heatmap */}
-      <div className="flex-1 relative bg-card/50 rounded-lg border border-border/50 overflow-hidden">
-        {/* Nav bar */}
-        <div className="flex items-center gap-2 p-2 border-b border-border/30">
-          <div className="w-4 h-4 rounded bg-primary/40" />
-          <div className="flex-1 flex gap-3">
-            {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="h-2 w-8 rounded bg-muted" />
+        {/* Heatmap visualization */}
+        <div className="p-6">
+          {/* Mock interface with hotspots */}
+          <div className="relative bg-muted/10 rounded-xl border border-border/50 p-4 mb-4">
+            {/* Fake navigation */}
+            <div className="flex items-center justify-between mb-4">
+              <div className="w-20 h-5 bg-muted/50 rounded" />
+              <div className="flex gap-4">
+                {[1, 2, 3, 4].map((i) => (
+                  <div key={i} className="w-12 h-3 bg-muted/30 rounded" />
+                ))}
+              </div>
+              <motion.div
+                className="w-8 h-8 rounded-full bg-red-500/50"
+                animate={{ scale: [1, 1.4, 1], opacity: [0.5, 0.8, 0.5] }}
+                transition={{ duration: 2, repeat: Infinity }}
+              />
+            </div>
+
+            {/* Content areas with heatmap overlays */}
+            <div className="space-y-3">
+              <motion.div
+                className="h-16 rounded-lg bg-gradient-to-r from-red-500/40 via-yellow-500/30 to-transparent relative"
+                animate={{ opacity: [0.4, 0.7, 0.4] }}
+                transition={{ duration: 3, repeat: Infinity }}
+              >
+                <div className="absolute inset-0 flex items-center px-4">
+                  <div className="h-3 w-32 bg-foreground/10 rounded" />
+                </div>
+              </motion.div>
+              <div className="grid grid-cols-3 gap-3">
+                <motion.div
+                  className="h-20 rounded-lg bg-gradient-to-br from-yellow-500/40 to-transparent"
+                  animate={{ opacity: [0.3, 0.6, 0.3] }}
+                  transition={{ duration: 2.5, repeat: Infinity, delay: 0.3 }}
+                />
+                <motion.div
+                  className="h-20 rounded-lg bg-gradient-to-br from-green-500/30 to-transparent"
+                  animate={{ opacity: [0.2, 0.4, 0.2] }}
+                  transition={{ duration: 2, repeat: Infinity, delay: 0.6 }}
+                />
+                <motion.div
+                  className="h-20 rounded-lg bg-gradient-to-br from-red-500/50 to-transparent"
+                  animate={{ opacity: [0.4, 0.7, 0.4] }}
+                  transition={{ duration: 2.2, repeat: Infinity, delay: 0.9 }}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Stats */}
+          <div className="grid grid-cols-4 gap-3">
+            {[
+              { label: "Task Success", value: "98%", color: "text-emerald-500" },
+              { label: "Avg. Time", value: "2.3s", color: "text-primary" },
+              { label: "Error Rate", value: "2%", color: "text-amber-500" },
+              { label: "Satisfaction", value: "4.9", color: "text-rose-500" },
+            ].map((stat, i) => (
+              <motion.div
+                key={stat.label}
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.6 + i * 0.1 }}
+                className="text-center"
+              >
+                <div className={`text-lg font-bold ${stat.color}`}>{stat.value}</div>
+                <div className="text-[10px] text-muted-foreground">{stat.label}</div>
+              </motion.div>
             ))}
           </div>
-          <motion.div
-            className="w-6 h-6 rounded-full bg-red-500/60"
-            animate={{ scale: [1, 1.3, 1], opacity: [0.6, 0.8, 0.6] }}
-            transition={{ duration: 2, repeat: Infinity }}
-          />
         </div>
-
-        {/* Content with hotspots */}
-        <div className="p-3 space-y-2">
-          <motion.div
-            className="h-12 rounded bg-gradient-to-r from-red-500/40 via-yellow-500/30 to-transparent relative"
-            animate={{ opacity: [0.5, 0.8, 0.5] }}
-            transition={{ duration: 3, repeat: Infinity }}
-          >
-            <div className="absolute inset-0 flex items-center px-3">
-              <div className="h-2 w-24 rounded bg-foreground/10" />
-            </div>
-          </motion.div>
-          <div className="grid grid-cols-2 gap-2">
-            <motion.div
-              className="h-16 rounded bg-gradient-to-br from-yellow-500/30 to-transparent"
-              animate={{ opacity: [0.4, 0.7, 0.4] }}
-              transition={{ duration: 2.5, repeat: Infinity, delay: 0.5 }}
-            />
-            <motion.div
-              className="h-16 rounded bg-gradient-to-br from-green-500/20 to-transparent"
-              animate={{ opacity: [0.3, 0.5, 0.3] }}
-              transition={{ duration: 2, repeat: Infinity, delay: 1 }}
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* Stats */}
-      <div className="flex items-center justify-between pt-3">
-        <div className="text-center">
-          <div className="text-sm font-bold text-primary">94%</div>
-          <div className="text-[9px] text-muted-foreground">Task Success</div>
-        </div>
-        <div className="text-center">
-          <div className="text-sm font-bold text-emerald-500">2.3s</div>
-          <div className="text-[9px] text-muted-foreground">Avg Time</div>
-        </div>
-        <div className="text-center">
-          <div className="text-sm font-bold text-amber-500">12</div>
-          <div className="text-[9px] text-muted-foreground">Pain Points</div>
-        </div>
-      </div>
+      </motion.div>
     </div>
   )
 }
 
 function DesignSystemVisual() {
   return (
-    <div className="w-full h-full p-4 flex flex-col">
-      {/* Header */}
-      <div className="flex items-center gap-2 mb-4">
-        <Layers className="w-4 h-4 text-primary" />
-        <span className="text-[10px] text-muted-foreground uppercase tracking-wider">Component Library</span>
-      </div>
-
-      {/* Component grid */}
-      <div className="flex-1 grid grid-cols-3 gap-2">
-        {[
-          { icon: "btn", label: "Buttons", count: 12 },
-          { icon: "input", label: "Inputs", count: 8 },
-          { icon: "card", label: "Cards", count: 6 },
-          { icon: "modal", label: "Modals", count: 4 },
-          { icon: "nav", label: "Navigation", count: 5 },
-          { icon: "icon", label: "Icons", count: 48 },
-        ].map((comp, i) => (
-          <motion.div
-            key={comp.label}
-            className="bg-card/80 rounded-lg border border-border/50 p-2 flex flex-col items-center justify-center gap-1 hover:border-primary/30 transition-colors"
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: i * 0.08 }}
-          >
-            <div className="w-6 h-6 rounded bg-primary/20 flex items-center justify-center">
-              {comp.icon === "btn" && <div className="w-4 h-2 rounded bg-primary/60" />}
-              {comp.icon === "input" && <div className="w-4 h-2 rounded-sm border border-primary/40" />}
-              {comp.icon === "card" && <div className="w-4 h-3 rounded-sm bg-primary/30" />}
-              {comp.icon === "modal" && <div className="w-3 h-3 rounded bg-primary/40" />}
-              {comp.icon === "nav" && <div className="w-4 h-0.5 bg-primary/60" />}
-              {comp.icon === "icon" && <Star className="w-3 h-3 text-primary" />}
+    <div className="relative w-full h-full">
+      <motion.div
+        initial={{ opacity: 0, y: 40 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.8 }}
+        className="absolute inset-0 bg-card/90 backdrop-blur-sm rounded-2xl border border-primary/20 overflow-hidden shadow-2xl shadow-primary/10"
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-border/50">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-violet-500/20 flex items-center justify-center">
+              <Layers className="w-4 h-4 text-violet-500" />
             </div>
-            <div className="text-[8px] text-muted-foreground text-center">{comp.label}</div>
-            <div className="text-[10px] font-medium text-primary">{comp.count}</div>
-          </motion.div>
-        ))}
-      </div>
+            <div>
+              <div className="text-sm font-semibold">Design System</div>
+              <div className="text-xs text-muted-foreground">Component library</div>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <Code2 className="w-4 h-4 text-muted-foreground" />
+            <Figma className="w-4 h-4 text-muted-foreground" />
+          </div>
+        </div>
 
-      {/* Design tokens */}
-      <div className="pt-3 border-t border-border/50 mt-3">
-        <div className="flex items-center justify-between">
-          <div className="flex gap-1">
-            {["#0066FF", "#00D4AA", "#FF6B35", "#8B5CF6"].map((color, i) => (
+        {/* Component grid */}
+        <div className="p-6">
+          <div className="grid grid-cols-4 gap-3 mb-6">
+            {[
+              { name: "Buttons", count: 12, color: "bg-primary/20 border-primary/30" },
+              { name: "Inputs", count: 8, color: "bg-emerald-500/20 border-emerald-500/30" },
+              { name: "Cards", count: 6, color: "bg-amber-500/20 border-amber-500/30" },
+              { name: "Modals", count: 4, color: "bg-rose-500/20 border-rose-500/30" },
+              { name: "Navigation", count: 5, color: "bg-violet-500/20 border-violet-500/30" },
+              { name: "Tables", count: 3, color: "bg-cyan-500/20 border-cyan-500/30" },
+              { name: "Forms", count: 7, color: "bg-orange-500/20 border-orange-500/30" },
+              { name: "Icons", count: 48, color: "bg-pink-500/20 border-pink-500/30" },
+            ].map((comp, i) => (
               <motion.div
-                key={color}
-                className="w-4 h-4 rounded-full border border-border/50"
-                style={{ backgroundColor: color }}
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ delay: 0.5 + i * 0.1 }}
-              />
+                key={comp.name}
+                initial={{ opacity: 0, scale: 0.8 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.3 + i * 0.05 }}
+                className={`p-3 rounded-xl border ${comp.color} hover:scale-105 transition-transform cursor-pointer`}
+              >
+                <div className="text-xs font-medium mb-1">{comp.name}</div>
+                <div className="text-lg font-bold text-primary">{comp.count}</div>
+              </motion.div>
             ))}
           </div>
-          <div className="text-[9px] text-muted-foreground">24 tokens</div>
+
+          {/* Design tokens */}
+          <div className="p-4 bg-muted/10 rounded-xl border border-border/50">
+            <div className="text-xs text-muted-foreground mb-3">Design Tokens</div>
+            <div className="flex items-center justify-between">
+              <div className="flex gap-2">
+                {["#0066FF", "#00D4AA", "#FF6B35", "#8B5CF6", "#F43F5E", "#06B6D4"].map((color, i) => (
+                  <motion.div
+                    key={color}
+                    initial={{ scale: 0 }}
+                    whileInView={{ scale: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.6 + i * 0.05, type: "spring" }}
+                    className="w-6 h-6 rounded-full border-2 border-background shadow-sm"
+                    style={{ backgroundColor: color }}
+                  />
+                ))}
+              </div>
+              <div className="text-right">
+                <div className="text-sm font-semibold">42</div>
+                <div className="text-[10px] text-muted-foreground">Total tokens</div>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
+      </motion.div>
+
+      {/* Floating component preview */}
+      <motion.div
+        initial={{ opacity: 0, x: -40 }}
+        whileInView={{ opacity: 1, x: 0 }}
+        viewport={{ once: true }}
+        transition={{ delay: 0.8, duration: 0.6 }}
+        className="absolute -left-4 bottom-16 w-48 p-3 bg-card/95 backdrop-blur-sm rounded-xl border border-violet-500/30 shadow-xl"
+      >
+        <div className="text-[10px] text-muted-foreground mb-2">Button Component</div>
+        <div className="flex gap-2">
+          <div className="px-3 py-1.5 bg-primary text-primary-foreground rounded-md text-[10px] font-medium">Primary</div>
+          <div className="px-3 py-1.5 bg-muted text-muted-foreground rounded-md text-[10px] font-medium">Secondary</div>
+        </div>
+      </motion.div>
     </div>
   )
 }
 
-function MobileExperienceVisual() {
+function MobileVisual() {
   return (
-    <div className="w-full h-full p-4 flex items-center justify-center gap-3">
+    <div className="relative w-full h-full flex items-center justify-center gap-6">
       {/* Phone mockup */}
       <motion.div
-        className="w-20 h-40 bg-card rounded-2xl border-2 border-border/50 p-1.5 relative shadow-xl"
-        initial={{ y: 20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.5 }}
+        initial={{ opacity: 0, y: 40 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.8 }}
+        className="w-48 h-96 bg-card rounded-[2.5rem] border-4 border-border/80 p-2 shadow-2xl shadow-primary/10 relative"
       >
         {/* Notch */}
-        <div className="absolute top-1 left-1/2 -translate-x-1/2 w-8 h-1 bg-border rounded-full" />
+        <div className="absolute top-2 left-1/2 -translate-x-1/2 w-20 h-5 bg-background rounded-full" />
 
-        {/* Screen content */}
-        <div className="w-full h-full bg-background/50 rounded-xl overflow-hidden pt-3">
+        {/* Screen */}
+        <div className="w-full h-full bg-background rounded-[2rem] overflow-hidden pt-8">
           {/* Header */}
-          <div className="px-2 pb-2">
-            <div className="h-1.5 w-10 bg-foreground/20 rounded mb-1" />
-            <div className="h-1 w-6 bg-muted rounded" />
+          <div className="px-4 pb-3">
+            <div className="flex items-center justify-between mb-3">
+              <div>
+                <div className="h-2 w-16 bg-foreground/20 rounded mb-1" />
+                <div className="h-1.5 w-10 bg-muted rounded" />
+              </div>
+              <div className="w-8 h-8 rounded-full bg-primary/20" />
+            </div>
           </div>
 
-          {/* Card */}
-          <div className="mx-1.5 p-2 bg-primary/10 rounded-lg border border-primary/20 mb-2">
-            <div className="w-full h-8 bg-primary/20 rounded mb-1.5" />
-            <div className="h-1 w-8 bg-primary/30 rounded" />
+          {/* Featured card */}
+          <div className="mx-3 p-3 bg-gradient-to-br from-primary/20 to-primary/5 rounded-2xl border border-primary/20 mb-3">
+            <div className="w-full h-20 bg-primary/20 rounded-xl mb-2" />
+            <div className="h-2 w-24 bg-primary/30 rounded mb-1" />
+            <div className="h-1.5 w-16 bg-muted rounded" />
           </div>
 
           {/* List items */}
-          {[1, 2].map((i) => (
-            <div key={i} className="mx-1.5 mb-1.5 flex items-center gap-1.5">
-              <div className="w-4 h-4 rounded bg-muted" />
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="mx-3 mb-2 flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-muted" />
               <div className="flex-1">
-                <div className="h-1 w-8 bg-muted rounded mb-0.5" />
-                <div className="h-0.5 w-6 bg-muted/50 rounded" />
+                <div className="h-2 w-20 bg-muted rounded mb-1" />
+                <div className="h-1.5 w-14 bg-muted/50 rounded" />
               </div>
+              <div className="w-6 h-6 rounded-full bg-primary/20" />
             </div>
           ))}
 
           {/* Bottom nav */}
-          <div className="absolute bottom-2 left-2 right-2 flex justify-around">
-            {[1, 2, 3, 4].map((i) => (
+          <div className="absolute bottom-3 left-3 right-3 flex justify-around py-2 bg-card/80 backdrop-blur-sm rounded-2xl border border-border/50">
+            {[1, 2, 3, 4, 5].map((i) => (
               <div
                 key={i}
-                className={`w-3 h-3 rounded ${i === 1 ? "bg-primary" : "bg-muted"}`}
+                className={`w-6 h-6 rounded-lg ${i === 1 ? "bg-primary" : "bg-muted/50"}`}
               />
             ))}
           </div>
         </div>
       </motion.div>
 
-      {/* Gesture indicators */}
-      <div className="flex flex-col gap-2">
+      {/* Feature callouts */}
+      <div className="flex flex-col gap-4">
         {[
-          { label: "Swipe", icon: ArrowUpRight },
-          { label: "Tap", icon: Target },
-          { label: "Scroll", icon: Activity },
-        ].map((gesture, i) => (
+          { label: "Touch Gestures", icon: Activity },
+          { label: "Native Patterns", icon: Smartphone },
+          { label: "Responsive", icon: Layout },
+        ].map((item, i) => (
           <motion.div
-            key={gesture.label}
-            className="flex items-center gap-2 px-2 py-1.5 bg-card/80 rounded-lg border border-border/50"
-            initial={{ x: 20, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{ delay: 0.3 + i * 0.1 }}
+            key={item.label}
+            initial={{ opacity: 0, x: 30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.5 + i * 0.1 }}
+            className="flex items-center gap-3 px-4 py-3 bg-card/80 backdrop-blur-sm rounded-xl border border-border/50"
           >
-            <gesture.icon className="w-3 h-3 text-primary" />
-            <span className="text-[9px] text-muted-foreground">{gesture.label}</span>
+            <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center">
+              <item.icon className="w-4 h-4 text-primary" />
+            </div>
+            <span className="text-sm font-medium">{item.label}</span>
           </motion.div>
         ))}
       </div>
@@ -347,591 +897,497 @@ function MobileExperienceVisual() {
 
 function WebAppVisual() {
   return (
-    <div className="w-full h-full p-4 flex flex-col">
-      {/* Dashboard header */}
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-2">
-          <div className="w-5 h-5 rounded bg-primary/30 flex items-center justify-center">
-            <Zap className="w-3 h-3 text-primary" />
+    <div className="relative w-full h-full">
+      <motion.div
+        initial={{ opacity: 0, y: 40 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.8 }}
+        className="absolute inset-0 bg-card/90 backdrop-blur-sm rounded-2xl border border-primary/20 overflow-hidden shadow-2xl shadow-primary/10"
+      >
+        {/* App layout with sidebar */}
+        <div className="flex h-full">
+          {/* Sidebar */}
+          <div className="w-14 border-r border-border/50 py-4 flex flex-col items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center mb-4">
+              <Zap className="w-4 h-4 text-primary" />
+            </div>
+            {[Globe, BarChart3, Users, Layers, Bell].map((Icon, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, x: -10 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.3 + i * 0.05 }}
+                className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                  i === 0 ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted/50"
+                }`}
+              >
+                <Icon className="w-4 h-4" />
+              </motion.div>
+            ))}
           </div>
-          <div className="text-[10px] font-medium">Dashboard</div>
-        </div>
-        <div className="flex gap-1">
-          <Bell className="w-3.5 h-3.5 text-muted-foreground" />
-          <div className="w-4 h-4 rounded-full bg-primary/20" />
-        </div>
-      </div>
 
-      {/* Stats cards */}
-      <div className="grid grid-cols-3 gap-2 mb-3">
-        {[
-          { label: "Revenue", value: "$48.2k", change: "+12%" },
-          { label: "Users", value: "12.4k", change: "+8%" },
-          { label: "Orders", value: "842", change: "+23%" },
-        ].map((stat, i) => (
-          <motion.div
-            key={stat.label}
-            className="bg-card/80 rounded-lg p-2 border border-border/50"
-            initial={{ y: 10, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: i * 0.1 }}
-          >
-            <div className="text-[8px] text-muted-foreground mb-0.5">{stat.label}</div>
-            <div className="text-xs font-bold">{stat.value}</div>
-            <div className="text-[8px] text-emerald-500">{stat.change}</div>
-          </motion.div>
-        ))}
-      </div>
+          {/* Main content */}
+          <div className="flex-1 p-4">
+            {/* Header */}
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <div className="text-sm font-semibold mb-0.5">Project Dashboard</div>
+                <div className="text-xs text-muted-foreground">12 active projects</div>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="px-3 py-1.5 bg-primary text-primary-foreground rounded-lg text-xs font-medium">+ New Project</div>
+                <div className="w-7 h-7 rounded-full bg-muted" />
+              </div>
+            </div>
 
-      {/* Chart area */}
-      <div className="flex-1 bg-card/50 rounded-lg border border-border/50 p-2">
-        <div className="flex items-center justify-between mb-2">
-          <div className="text-[9px] text-muted-foreground">Activity Overview</div>
-          <BarChart3 className="w-3 h-3 text-muted-foreground" />
+            {/* Project cards grid */}
+            <div className="grid grid-cols-3 gap-3">
+              {[
+                { name: "E-commerce App", status: "In Progress", progress: 68 },
+                { name: "Dashboard UI", status: "Review", progress: 92 },
+                { name: "Mobile App", status: "In Progress", progress: 45 },
+                { name: "Design System", status: "Complete", progress: 100 },
+                { name: "Landing Page", status: "In Progress", progress: 78 },
+                { name: "Admin Panel", status: "Starting", progress: 12 },
+              ].map((project, i) => (
+                <motion.div
+                  key={project.name}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.4 + i * 0.05 }}
+                  className="p-3 bg-muted/20 rounded-xl border border-border/50 hover:border-primary/30 transition-colors"
+                >
+                  <div className="text-xs font-medium mb-1 truncate">{project.name}</div>
+                  <div className="text-[10px] text-muted-foreground mb-2">{project.status}</div>
+                  <div className="h-1.5 bg-muted rounded-full overflow-hidden">
+                    <motion.div
+                      className="h-full bg-primary rounded-full"
+                      initial={{ width: 0 }}
+                      whileInView={{ width: `${project.progress}%` }}
+                      viewport={{ once: true }}
+                      transition={{ delay: 0.6 + i * 0.05, duration: 0.8 }}
+                    />
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
         </div>
-        <div className="flex items-end gap-1 h-12">
-          {[40, 65, 45, 80, 55, 70, 90, 60, 75, 85].map((h, i) => (
-            <motion.div
-              key={i}
-              className="flex-1 bg-gradient-to-t from-primary/50 to-primary/20 rounded-t"
-              initial={{ height: 0 }}
-              animate={{ height: `${h}%` }}
-              transition={{ delay: 0.3 + i * 0.05 }}
-            />
-          ))}
-        </div>
-      </div>
-
-      {/* Quick actions */}
-      <div className="flex gap-2 mt-3">
-        <div className="flex-1 h-6 bg-primary rounded flex items-center justify-center">
-          <span className="text-[8px] text-primary-foreground font-medium">Create</span>
-        </div>
-        <div className="flex-1 h-6 bg-muted rounded flex items-center justify-center">
-          <span className="text-[8px] text-muted-foreground font-medium">Export</span>
-        </div>
-      </div>
+      </motion.div>
     </div>
   )
 }
 
 function EngagementVisual() {
   return (
-    <div className="w-full h-full p-4 flex flex-col">
-      {/* Gamification header */}
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-2">
-          <motion.div
-            className="w-6 h-6 rounded-full bg-amber-500/20 border border-amber-500/30 flex items-center justify-center"
-            animate={{ rotate: [0, 10, -10, 0] }}
-            transition={{ duration: 2, repeat: Infinity }}
-          >
-            <Star className="w-3 h-3 text-amber-500" />
-          </motion.div>
-          <div>
-            <div className="text-[10px] font-medium">Level 12</div>
-            <div className="text-[8px] text-muted-foreground">2,450 XP</div>
-          </div>
-        </div>
-        <div className="flex items-center gap-1">
-          <div className="w-4 h-4 rounded bg-primary/20 flex items-center justify-center">
-            <span className="text-[8px] text-primary font-bold">5</span>
-          </div>
-          <Bell className="w-3 h-3 text-muted-foreground" />
-        </div>
-      </div>
-
-      {/* Progress bar */}
-      <div className="mb-4">
-        <div className="h-2 bg-muted rounded-full overflow-hidden">
-          <motion.div
-            className="h-full bg-gradient-to-r from-primary to-cyan-400 rounded-full"
-            initial={{ width: 0 }}
-            animate={{ width: "72%" }}
-            transition={{ duration: 1, delay: 0.3 }}
-          />
-        </div>
-        <div className="flex justify-between mt-1">
-          <span className="text-[8px] text-muted-foreground">72% to Level 13</span>
-          <span className="text-[8px] text-primary">550 XP left</span>
-        </div>
-      </div>
-
-      {/* Achievement badges */}
-      <div className="flex-1">
-        <div className="text-[9px] text-muted-foreground mb-2">Recent Achievements</div>
-        <div className="grid grid-cols-4 gap-1.5">
-          {[
-            { icon: Target, unlocked: true },
-            { icon: Zap, unlocked: true },
-            { icon: Star, unlocked: true },
-            { icon: ArrowUpRight, unlocked: false },
-          ].map((badge, i) => (
+    <div className="relative w-full h-full">
+      <motion.div
+        initial={{ opacity: 0, y: 40 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.8 }}
+        className="absolute inset-0 bg-card/90 backdrop-blur-sm rounded-2xl border border-primary/20 overflow-hidden shadow-2xl shadow-primary/10"
+      >
+        {/* Gamification header */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-border/50">
+          <div className="flex items-center gap-3">
             <motion.div
-              key={i}
-              className={`aspect-square rounded-lg flex items-center justify-center ${
-                badge.unlocked
-                  ? "bg-primary/20 border border-primary/30"
-                  : "bg-muted/50 border border-border/30 opacity-40"
-              }`}
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ delay: 0.5 + i * 0.1, type: "spring" }}
+              className="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-500/30 flex items-center justify-center"
+              animate={{ rotate: [0, 5, -5, 0] }}
+              transition={{ duration: 2, repeat: Infinity }}
             >
-              <badge.icon className={`w-4 h-4 ${badge.unlocked ? "text-primary" : "text-muted-foreground"}`} />
+              <Star className="w-5 h-5 text-amber-500" />
             </motion.div>
-          ))}
+            <div>
+              <div className="text-sm font-semibold">Level 12 • Pro User</div>
+              <div className="text-xs text-muted-foreground">2,450 XP earned</div>
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            <div className="px-3 py-1.5 bg-amber-500/20 rounded-full">
+              <span className="text-xs font-medium text-amber-500">🔥 7 Day Streak</span>
+            </div>
+          </div>
         </div>
-      </div>
 
-      {/* Streak */}
-      <div className="flex items-center gap-2 p-2 bg-gradient-to-r from-primary/20 to-cyan-500/10 rounded-lg border border-primary/20 mt-2">
-        <motion.div
-          animate={{ scale: [1, 1.2, 1] }}
-          transition={{ duration: 1.5, repeat: Infinity }}
-        >
-          <Zap className="w-4 h-4 text-primary" />
-        </motion.div>
-        <div>
-          <div className="text-[10px] font-bold">7 Day Streak!</div>
-          <div className="text-[8px] text-muted-foreground">Keep it going</div>
+        {/* Content */}
+        <div className="p-6">
+          {/* Level progress */}
+          <div className="mb-6">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-xs text-muted-foreground">Progress to Level 13</span>
+              <span className="text-xs text-primary font-medium">72%</span>
+            </div>
+            <div className="h-3 bg-muted rounded-full overflow-hidden">
+              <motion.div
+                className="h-full bg-gradient-to-r from-primary via-cyan-400 to-primary rounded-full"
+                initial={{ width: 0 }}
+                whileInView={{ width: "72%" }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.4, duration: 1 }}
+              />
+            </div>
+            <div className="text-[10px] text-muted-foreground mt-1">550 XP to next level</div>
+          </div>
+
+          {/* Achievements */}
+          <div className="mb-6">
+            <div className="text-xs text-muted-foreground mb-3">Recent Achievements</div>
+            <div className="grid grid-cols-5 gap-3">
+              {[
+                { icon: Target, label: "First Goal", unlocked: true },
+                { icon: Zap, label: "Speed Run", unlocked: true },
+                { icon: Star, label: "Rising Star", unlocked: true },
+                { icon: Heart, label: "Beloved", unlocked: true },
+                { icon: Shield, label: "Guardian", unlocked: false },
+              ].map((badge, i) => (
+                <motion.div
+                  key={badge.label}
+                  initial={{ scale: 0 }}
+                  whileInView={{ scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.5 + i * 0.1, type: "spring" }}
+                  className={`aspect-square rounded-xl flex flex-col items-center justify-center gap-1 ${
+                    badge.unlocked
+                      ? "bg-primary/20 border border-primary/30"
+                      : "bg-muted/30 border border-border/30 opacity-40"
+                  }`}
+                >
+                  <badge.icon className={`w-5 h-5 ${badge.unlocked ? "text-primary" : "text-muted-foreground"}`} />
+                  <span className="text-[8px] text-muted-foreground">{badge.label}</span>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+
+          {/* Leaderboard preview */}
+          <div className="p-4 bg-gradient-to-r from-primary/10 to-cyan-500/10 rounded-xl border border-primary/20">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-xs font-medium">Leaderboard Position</span>
+              <span className="text-sm font-bold text-primary">#42</span>
+            </div>
+            <div className="flex items-center gap-2">
+              {[1, 2, 3, 4, 5].map((i) => (
+                <div
+                  key={i}
+                  className={`flex-1 h-8 rounded-lg ${
+                    i === 4 ? "bg-primary ring-2 ring-primary/30" : "bg-muted/30"
+                  } flex items-center justify-center`}
+                >
+                  <span className="text-[10px] font-medium">{i === 4 ? "You" : ""}</span>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
-      </div>
+      </motion.div>
+
+      {/* Floating notification */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ delay: 1, duration: 0.6 }}
+        className="absolute -right-4 top-20 w-52 p-3 bg-card/95 backdrop-blur-sm rounded-xl border border-amber-500/30 shadow-xl"
+      >
+        <div className="flex items-center gap-2 mb-1">
+          <motion.div
+            animate={{ scale: [1, 1.2, 1] }}
+            transition={{ duration: 1.5, repeat: Infinity }}
+          >
+            <Zap className="w-4 h-4 text-amber-500" />
+          </motion.div>
+          <span className="text-xs font-medium">Achievement Unlocked!</span>
+        </div>
+        <p className="text-[10px] text-muted-foreground">You&apos;ve completed your 7-day streak!</p>
+      </motion.div>
     </div>
   )
 }
 
-function getServiceVisual(serviceId: string) {
-  switch (serviceId) {
-    case "retention":
-      return <RetentionVisual />
-    case "usability":
-      return <UsabilityVisual />
-    case "systems":
-      return <DesignSystemVisual />
-    case "mobile":
-      return <MobileExperienceVisual />
-    case "webapp":
-      return <WebAppVisual />
-    case "engagement":
-      return <EngagementVisual />
-    default:
-      return <RetentionVisual />
+function getExpertiseVisual(id: string) {
+  switch (id) {
+    case "retention": return <RetentionVisual />
+    case "onboarding": return <OnboardingVisual />
+    case "conversion": return <ConversionVisual />
+    case "dashboard": return <DashboardVisual />
+    case "usability": return <UsabilityVisual />
+    case "systems": return <DesignSystemVisual />
+    case "mobile": return <MobileVisual />
+    case "webapp": return <WebAppVisual />
+    case "engagement": return <EngagementVisual />
+    default: return <RetentionVisual />
   }
 }
 
 export function ServicesSection() {
+  const sectionRef = useRef<HTMLDivElement>(null)
   const [activeIndex, setActiveIndex] = useState(0)
-  const [isPaused, setIsPaused] = useState(false)
-  const [progress, setProgress] = useState(0)
-  
-  const selectedService = services[activeIndex]
+  const isInView = useInView(sectionRef, { once: false, margin: "-20%" })
 
-  // Auto-rotate effect
+  // Auto-scroll through expertise areas when in view
   useEffect(() => {
-    if (isPaused) {
-      setProgress(0)
-      return
-    }
+    if (!isInView) return
 
-    const progressInterval = setInterval(() => {
-      setProgress((prev) => {
-        if (prev >= 100) {
-          return 0
-        }
-        return prev + (100 / (AUTO_ROTATE_INTERVAL / 50))
-      })
-    }, 50)
+    const interval = setInterval(() => {
+      setActiveIndex((prev) => (prev + 1) % expertiseAreas.length)
+    }, 6000)
 
-    const rotateInterval = setInterval(() => {
-      setActiveIndex((prev) => (prev + 1) % services.length)
-      setProgress(0)
-    }, AUTO_ROTATE_INTERVAL)
-
-    return () => {
-      clearInterval(progressInterval)
-      clearInterval(rotateInterval)
-    }
-  }, [isPaused])
-
-  const handleServiceClick = useCallback((index: number) => {
-    setActiveIndex(index)
-    setProgress(0)
-    // Don't pause on click - let it continue auto-rotating
-  }, [])
-
-  const togglePause = useCallback(() => {
-    setIsPaused((prev) => !prev)
-    setProgress(0)
-  }, [])
+    return () => clearInterval(interval)
+  }, [isInView])
 
   return (
-    <section id="services" className="py-24 lg:py-32 relative overflow-hidden">
-      {/* Background effects */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-primary/5 rounded-full blur-3xl pointer-events-none" />
-      
-      {/* Floating particles */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {[...Array(6)].map((_, i) => (
+    <section
+      ref={sectionRef}
+      id="services"
+      className="relative py-32 overflow-hidden"
+    >
+      {/* Background elements */}
+      <div className="absolute inset-0 pointer-events-none">
+        {/* Large gradient orbs */}
+        <motion.div
+          className="absolute -top-40 -right-40 w-[800px] h-[800px] bg-primary/5 rounded-full blur-3xl"
+          animate={{ 
+            scale: [1, 1.1, 1],
+            opacity: [0.3, 0.5, 0.3]
+          }}
+          transition={{ duration: 8, repeat: Infinity }}
+        />
+        <motion.div
+          className="absolute -bottom-40 -left-40 w-[600px] h-[600px] bg-primary/5 rounded-full blur-3xl"
+          animate={{ 
+            scale: [1.1, 1, 1.1],
+            opacity: [0.3, 0.5, 0.3]
+          }}
+          transition={{ duration: 10, repeat: Infinity }}
+        />
+
+        {/* Floating particles */}
+        {[...Array(20)].map((_, i) => (
           <motion.div
             key={i}
             className="absolute w-1 h-1 bg-primary/30 rounded-full"
             style={{
-              left: `${15 + i * 15}%`,
-              top: `${20 + (i % 3) * 25}%`,
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
             }}
             animate={{
               y: [0, -30, 0],
-              opacity: [0.3, 0.6, 0.3],
+              opacity: [0.2, 0.5, 0.2],
             }}
             transition={{
-              duration: 4 + i * 0.5,
+              duration: 3 + Math.random() * 2,
               repeat: Infinity,
-              delay: i * 0.3,
+              delay: Math.random() * 2,
             }}
           />
         ))}
+
+        {/* Grid pattern */}
+        <div 
+          className="absolute inset-0 opacity-[0.02]"
+          style={{
+            backgroundImage: `linear-gradient(rgba(0,102,255,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(0,102,255,0.3) 1px, transparent 1px)`,
+            backgroundSize: '60px 60px'
+          }}
+        />
       </div>
 
       <div className="container mx-auto px-6 relative z-10">
         {/* Section Header */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-16"
+          className="text-center mb-20"
         >
-          <span className="text-primary text-sm font-medium uppercase tracking-widest">
-            Expertise
-          </span>
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mt-4 mb-6 text-balance">
-            What Do I Help Startups Improve?
+          <motion.span
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-primary/30 bg-primary/5 text-primary text-sm font-medium mb-6"
+          >
+            <Target className="w-4 h-4" />
+            Strategic UX Solutions
+          </motion.span>
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-balance">
+            What Do I Help{" "}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-cyan-400 to-primary">
+              Startups
+            </span>{" "}
+            Improve?
           </h2>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto text-pretty">
-            I specialize in solving critical UI/UX challenges that directly impact your business metrics and user satisfaction.
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto text-pretty">
+            I transform complex UI/UX challenges into intuitive, high-performing digital experiences 
+            that drive growth and user satisfaction.
           </p>
         </motion.div>
 
-        <div className="grid lg:grid-cols-[1fr_1.4fr] gap-8 lg:gap-12 items-start">
-          {/* Service Cards - Left Side */}
-          <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="space-y-3"
-          >
-            {/* Pause/Play control */}
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-xs text-muted-foreground uppercase tracking-wider">
-                {isPaused ? "Paused" : "Auto-playing"}
-              </span>
+        {/* Main showcase area */}
+        <div className="relative">
+          {/* Progress indicator */}
+          <div className="flex justify-center gap-2 mb-12">
+            {expertiseAreas.map((area, i) => (
               <button
-                onClick={togglePause}
-                className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-card/50 border border-border/50 hover:border-primary/30 transition-colors text-sm"
+                key={area.id}
+                onClick={() => setActiveIndex(i)}
+                className="group relative"
               >
-                {isPaused ? (
-                  <>
-                    <Play className="w-3 h-3 text-primary" />
-                    <span className="text-xs text-muted-foreground">Play</span>
-                  </>
-                ) : (
-                  <>
-                    <Pause className="w-3 h-3 text-primary" />
-                    <span className="text-xs text-muted-foreground">Pause</span>
-                  </>
+                <div
+                  className={`w-12 h-1.5 rounded-full transition-all duration-300 ${
+                    i === activeIndex ? "bg-primary" : "bg-muted/50 hover:bg-muted"
+                  }`}
+                />
+                {i === activeIndex && (
+                  <motion.div
+                    layoutId="activeIndicator"
+                    className="absolute inset-0 bg-primary rounded-full"
+                  />
                 )}
               </button>
-            </div>
-
-            {services.map((service, index) => (
-              <motion.button
-                key={service.id}
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.05 }}
-                onClick={() => handleServiceClick(index)}
-                className={`group relative w-full p-4 rounded-xl border transition-all duration-500 text-left overflow-hidden ${
-                  activeIndex === index
-                    ? "bg-primary/10 border-primary/50"
-                    : "bg-card/30 border-border/30 hover:border-primary/30 hover:bg-card/50"
-                }`}
-              >
-                {/* Active glow effect */}
-                {activeIndex === index && (
-                  <motion.div
-                    className="absolute inset-0 bg-gradient-to-r from-primary/10 via-primary/5 to-transparent"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 0.5 }}
-                  />
-                )}
-
-                {/* Progress bar for active item */}
-                {activeIndex === index && !isPaused && (
-                  <motion.div
-                    className="absolute bottom-0 left-0 h-0.5 bg-primary"
-                    style={{ width: `${progress}%` }}
-                    transition={{ duration: 0.05 }}
-                  />
-                )}
-
-                <div className="relative z-10 flex items-center gap-4">
-                  {/* Icon with glow */}
-                  <div className="relative">
-                    <motion.div
-                      className={`p-3 rounded-xl transition-all duration-500 ${
-                        activeIndex === index
-                          ? "bg-primary/20 text-primary shadow-lg shadow-primary/20"
-                          : "bg-muted/50 text-muted-foreground group-hover:text-primary group-hover:bg-muted"
-                      }`}
-                      animate={activeIndex === index ? {
-                        boxShadow: [
-                          "0 0 20px rgba(0,102,255,0.2)",
-                          "0 0 30px rgba(0,102,255,0.3)",
-                          "0 0 20px rgba(0,102,255,0.2)",
-                        ],
-                      } : {}}
-                      transition={{ duration: 2, repeat: Infinity }}
-                    >
-                      <service.icon className="w-5 h-5" />
-                    </motion.div>
-                    
-                    {/* Animated ring for active */}
-                    {activeIndex === index && (
-                      <motion.div
-                        className="absolute -inset-1 rounded-xl border border-primary/30"
-                        animate={{ scale: [1, 1.1, 1], opacity: [0.5, 0.8, 0.5] }}
-                        transition={{ duration: 2, repeat: Infinity }}
-                      />
-                    )}
-                  </div>
-
-                  <div className="flex-1 min-w-0">
-                    <h3
-                      className={`font-semibold transition-colors duration-300 ${
-                        activeIndex === index
-                          ? "text-foreground"
-                          : "text-muted-foreground group-hover:text-foreground"
-                      }`}
-                    >
-                      {service.title}
-                    </h3>
-                    <AnimatePresence mode="wait">
-                      {activeIndex === index && (
-                        <motion.p
-                          initial={{ opacity: 0, height: 0 }}
-                          animate={{ opacity: 1, height: "auto" }}
-                          exit={{ opacity: 0, height: 0 }}
-                          transition={{ duration: 0.3 }}
-                          className="text-sm text-muted-foreground mt-1 line-clamp-2"
-                        >
-                          {service.description}
-                        </motion.p>
-                      )}
-                    </AnimatePresence>
-                  </div>
-
-                  {/* Active indicator dot */}
-                  <motion.div
-                    className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                      activeIndex === index ? "bg-primary" : "bg-muted"
-                    }`}
-                    animate={activeIndex === index ? {
-                      scale: [1, 1.3, 1],
-                    } : {}}
-                    transition={{ duration: 1.5, repeat: Infinity }}
-                  />
-                </div>
-              </motion.button>
             ))}
+          </div>
 
-            {/* Navigation dots */}
-            <div className="flex items-center justify-center gap-2 pt-4">
-              {services.map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => handleServiceClick(index)}
-                  className={`relative w-2 h-2 rounded-full transition-all duration-300 ${
-                    activeIndex === index ? "bg-primary w-6" : "bg-muted hover:bg-primary/50"
-                  }`}
-                >
-                  {activeIndex === index && !isPaused && (
-                    <motion.div
-                      className="absolute inset-0 rounded-full bg-primary"
-                      style={{
-                        clipPath: `inset(0 ${100 - progress}% 0 0)`,
-                      }}
-                    />
-                  )}
-                </button>
-              ))}
-            </div>
-          </motion.div>
-
-          {/* Visual Display - Right Side */}
-          <motion.div
-            initial={{ opacity: 0, x: 30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="relative"
-            onMouseEnter={() => setIsPaused(true)}
-            onMouseLeave={() => setIsPaused(false)}
-          >
-            {/* Visual Container */}
-            <div className="aspect-[16/11] relative">
-              <AnimatePresence mode="wait">
+          {/* Expertise showcase */}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeIndex}
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -40 }}
+              transition={{ duration: 0.6, ease: "easeInOut" }}
+              className="grid lg:grid-cols-2 gap-12 items-center"
+            >
+              {/* Content side */}
+              <div className="order-2 lg:order-1">
                 <motion.div
-                  key={selectedService.id}
-                  initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                  animate={{ opacity: 1, scale: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.98, y: -10 }}
-                  transition={{ duration: 0.5, ease: "easeOut" }}
-                  className="relative w-full h-full rounded-2xl border border-primary/20 overflow-hidden"
+                  initial={{ opacity: 0, x: -30 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.2 }}
                 >
-                  {/* Gradient background with animation */}
-                  <motion.div
-                    className={`absolute inset-0 bg-gradient-to-br ${selectedService.accentColor} opacity-20`}
-                    animate={{ opacity: [0.15, 0.25, 0.15] }}
-                    transition={{ duration: 4, repeat: Infinity }}
-                  />
-                  
-                  {/* Animated grid pattern */}
-                  <div className="absolute inset-0 opacity-20">
+                  {/* Icon and title */}
+                  <div className="flex items-center gap-4 mb-6">
                     <motion.div
-                      className="absolute inset-0"
-                      style={{
-                        backgroundImage: `linear-gradient(rgba(0,102,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(0,102,255,0.1) 1px, transparent 1px)`,
-                        backgroundSize: '25px 25px'
-                      }}
-                      animate={{ backgroundPosition: ["0px 0px", "25px 25px"] }}
-                      transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                    />
-                  </div>
-                  
-                  {/* UI Visual Content */}
-                  <div className="absolute inset-4">
-                    <motion.div
-                      className="w-full h-full bg-background/95 backdrop-blur-sm rounded-xl border border-primary/30 shadow-2xl overflow-hidden"
-                      initial={{ y: 10, opacity: 0 }}
-                      animate={{ y: 0, opacity: 1 }}
-                      transition={{ delay: 0.2, duration: 0.4 }}
+                      className="w-16 h-16 rounded-2xl bg-primary/20 border border-primary/30 flex items-center justify-center"
+                      whileHover={{ scale: 1.05, rotate: 5 }}
                     >
-                      {getServiceVisual(selectedService.id)}
+                      {(() => {
+                        const IconComponent = expertiseAreas[activeIndex].icon
+                        return <IconComponent className="w-8 h-8 text-primary" />
+                      })()}
                     </motion.div>
+                    <div>
+                      <div className="text-sm text-primary font-medium mb-1">
+                        {expertiseAreas[activeIndex].subtitle}
+                      </div>
+                      <h3 className="text-3xl md:text-4xl font-bold">
+                        {expertiseAreas[activeIndex].title}
+                      </h3>
+                    </div>
                   </div>
-                  
-                  {/* Animated glow effect */}
-                  <motion.div
-                    className={`absolute -bottom-20 -right-20 w-60 h-60 ${selectedService.bgGlow} rounded-full blur-3xl`}
-                    animate={{ 
-                      scale: [1, 1.3, 1], 
-                      opacity: [0.3, 0.5, 0.3],
-                      x: [0, 20, 0],
-                      y: [0, -20, 0],
-                    }}
-                    transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-                  />
 
-                  <motion.div
-                    className="absolute -top-10 -left-10 w-40 h-40 bg-primary/10 rounded-full blur-3xl"
-                    animate={{ 
-                      scale: [1, 1.2, 1], 
-                      opacity: [0.2, 0.4, 0.2],
-                    }}
-                    transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-                  />
-                  
-                  {/* Icon badge with pulse */}
-                  <motion.div
-                    className="absolute bottom-4 right-4 p-3 rounded-xl bg-background/80 backdrop-blur-sm border border-primary/30"
-                    animate={{ 
-                      boxShadow: [
-                        "0 0 20px rgba(0,102,255,0.1)",
-                        "0 0 30px rgba(0,102,255,0.2)",
-                        "0 0 20px rgba(0,102,255,0.1)",
-                      ],
-                    }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                    whileHover={{ scale: 1.1, rotate: 5 }}
-                  >
-                    <selectedService.icon className="w-5 h-5 text-primary" />
-                  </motion.div>
-                  
-                  {/* Floating geometric accents */}
-                  <motion.div
-                    className="absolute top-6 right-6 w-12 h-12 rounded-lg bg-primary/10 border border-primary/20 backdrop-blur-sm"
-                    animate={{ 
-                      y: [0, -8, 0], 
-                      rotate: [0, 5, 0],
-                      scale: [1, 1.05, 1],
-                    }}
-                    transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-                  />
-
-                  <motion.div
-                    className="absolute top-1/3 right-8 w-6 h-6 rounded-full bg-primary/15 border border-primary/20"
-                    animate={{ 
-                      y: [0, 10, 0], 
-                      x: [0, -5, 0],
-                      opacity: [0.5, 0.8, 0.5],
-                    }}
-                    transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
-                  />
-
-                  <motion.div
-                    className="absolute bottom-1/4 left-6 w-8 h-8 rounded-lg bg-primary/10 border border-primary/15 rotate-45"
-                    animate={{ 
-                      y: [0, -10, 0], 
-                      rotate: [45, 50, 45],
-                    }}
-                    transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-                  />
-                </motion.div>
-              </AnimatePresence>
-            </div>
-
-            {/* Service title badge */}
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={selectedService.id}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.3 }}
-                className="mt-6 flex items-center justify-between"
-              >
-                <div>
-                  <h3 className="text-xl font-bold mb-1">{selectedService.title}</h3>
-                  <p className="text-muted-foreground text-sm max-w-md">
-                    {selectedService.description}
+                  {/* Description */}
+                  <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
+                    {expertiseAreas[activeIndex].description}
                   </p>
+
+                  {/* Stats */}
+                  <div className="grid grid-cols-3 gap-4 mb-8">
+                    {expertiseAreas[activeIndex].stats.map((stat, i) => (
+                      <motion.div
+                        key={stat.label}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.4 + i * 0.1 }}
+                        className="p-4 bg-card/50 rounded-xl border border-border/50"
+                      >
+                        <stat.icon className="w-5 h-5 text-primary mb-2" />
+                        <div className="text-2xl font-bold mb-1">{stat.value}</div>
+                        <div className="text-xs text-muted-foreground">{stat.label}</div>
+                      </motion.div>
+                    ))}
+                  </div>
+
+                  {/* Features */}
+                  <div className="flex flex-wrap gap-2">
+                    {expertiseAreas[activeIndex].features.map((feature, i) => (
+                      <motion.span
+                        key={feature}
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: 0.6 + i * 0.05 }}
+                        className="px-4 py-2 bg-primary/10 border border-primary/20 rounded-full text-sm font-medium text-primary"
+                      >
+                        {feature}
+                      </motion.span>
+                    ))}
+                  </div>
+                </motion.div>
+              </div>
+
+              {/* Visual side */}
+              <motion.div
+                initial={{ opacity: 0, x: 30 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.3 }}
+                className="order-1 lg:order-2 relative"
+              >
+                <div className="relative aspect-[4/3] md:aspect-square lg:aspect-[4/3]">
+                  {/* Glow effect behind visual */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-transparent rounded-3xl blur-3xl transform scale-110" />
+                  
+                  {/* Visual container */}
+                  <div className="relative h-full">
+                    {getExpertiseVisual(expertiseAreas[activeIndex].id)}
+                  </div>
+
+                  {/* Decorative elements */}
+                  <motion.div
+                    className="absolute -top-4 -right-4 w-24 h-24 border border-primary/20 rounded-2xl"
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                  />
+                  <motion.div
+                    className="absolute -bottom-4 -left-4 w-16 h-16 border border-primary/20 rounded-full"
+                    animate={{ rotate: -360 }}
+                    transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
+                  />
                 </div>
               </motion.div>
-            </AnimatePresence>
-
-            {/* Key benefits */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.3 }}
-              className="flex flex-wrap gap-3 mt-4"
-            >
-              {["User-Centered", "Data-Driven", "Scalable"].map((benefit) => (
-                <span
-                  key={benefit}
-                  className="flex items-center gap-1.5 text-sm text-muted-foreground"
-                >
-                  <CheckCircle2 className="w-4 h-4 text-primary" />
-                  {benefit}
-                </span>
-              ))}
             </motion.div>
-          </motion.div>
+          </AnimatePresence>
+
+          {/* Navigation arrows */}
+          <div className="flex justify-center gap-4 mt-12">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setActiveIndex((prev) => (prev - 1 + expertiseAreas.length) % expertiseAreas.length)}
+              className="w-12 h-12 rounded-xl bg-card border border-border/50 flex items-center justify-center hover:border-primary/30 transition-colors"
+            >
+              <ChevronDown className="w-5 h-5 rotate-90" />
+            </motion.button>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setActiveIndex((prev) => (prev + 1) % expertiseAreas.length)}
+              className="w-12 h-12 rounded-xl bg-card border border-border/50 flex items-center justify-center hover:border-primary/30 transition-colors"
+            >
+              <ChevronDown className="w-5 h-5 -rotate-90" />
+            </motion.button>
+          </div>
+
+          {/* Expertise counter */}
+          <div className="text-center mt-8">
+            <span className="text-sm text-muted-foreground">
+              <span className="text-primary font-semibold">{activeIndex + 1}</span>
+              {" / "}
+              {expertiseAreas.length} expertise areas
+            </span>
+          </div>
         </div>
       </div>
     </section>
