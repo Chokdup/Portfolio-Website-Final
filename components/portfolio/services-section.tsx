@@ -155,14 +155,14 @@ const expertiseAreas = [
 // Premium Visual Components for each expertise area
 function RetentionVisual() {
   return (
-    <div className="relative w-full h-full">
+    <div className="relative w-full h-full scale-[0.85] origin-center">
       {/* Main dashboard mockup */}
       <motion.div
-        initial={{ opacity: 0, y: 40 }}
+        initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.8 }}
-        className="absolute inset-0 bg-card/90 backdrop-blur-sm rounded-2xl border border-primary/20 overflow-hidden shadow-2xl shadow-primary/10"
+        className="absolute inset-0 bg-card/90 backdrop-blur-sm rounded-xl border border-primary/20 overflow-hidden shadow-xl shadow-primary/10"
       >
         {/* Dashboard header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-border/50">
@@ -278,14 +278,14 @@ function RetentionVisual() {
 
 function OnboardingVisual() {
   return (
-    <div className="relative w-full h-full">
+    <div className="relative w-full h-full scale-[0.85] origin-center">
       {/* Main onboarding flow mockup */}
       <motion.div
-        initial={{ opacity: 0, y: 40 }}
+        initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.8 }}
-        className="absolute inset-0 bg-card/90 backdrop-blur-sm rounded-2xl border border-primary/20 overflow-hidden shadow-2xl shadow-primary/10"
+        className="absolute inset-0 bg-card/90 backdrop-blur-sm rounded-xl border border-primary/20 overflow-hidden shadow-xl shadow-primary/10"
       >
         {/* Progress header */}
         <div className="px-6 py-4 border-b border-border/50">
@@ -399,13 +399,13 @@ function OnboardingVisual() {
 
 function ConversionVisual() {
   return (
-    <div className="relative w-full h-full">
+    <div className="relative w-full h-full scale-[0.85] origin-center">
       <motion.div
-        initial={{ opacity: 0, y: 40 }}
+        initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.8 }}
-        className="absolute inset-0 bg-card/90 backdrop-blur-sm rounded-2xl border border-primary/20 overflow-hidden shadow-2xl shadow-primary/10"
+        className="absolute inset-0 bg-card/90 backdrop-blur-sm rounded-xl border border-primary/20 overflow-hidden shadow-xl shadow-primary/10"
       >
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-border/50">
@@ -490,13 +490,13 @@ function ConversionVisual() {
 
 function DashboardVisual() {
   return (
-    <div className="relative w-full h-full">
+    <div className="relative w-full h-full scale-[0.85] origin-center">
       <motion.div
-        initial={{ opacity: 0, y: 40 }}
+        initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.8 }}
-        className="absolute inset-0 bg-card/90 backdrop-blur-sm rounded-2xl border border-primary/20 overflow-hidden shadow-2xl shadow-primary/10"
+        className="absolute inset-0 bg-card/90 backdrop-blur-sm rounded-xl border border-primary/20 overflow-hidden shadow-xl shadow-primary/10"
       >
         {/* Dashboard header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-border/50">
@@ -615,13 +615,13 @@ function DashboardVisual() {
 
 function UsabilityVisual() {
   return (
-    <div className="relative w-full h-full">
+    <div className="relative w-full h-full scale-[0.85] origin-center">
       <motion.div
-        initial={{ opacity: 0, y: 40 }}
+        initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.8 }}
-        className="absolute inset-0 bg-card/90 backdrop-blur-sm rounded-2xl border border-primary/20 overflow-hidden shadow-2xl shadow-primary/10"
+        className="absolute inset-0 bg-card/90 backdrop-blur-sm rounded-xl border border-primary/20 overflow-hidden shadow-xl shadow-primary/10"
       >
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-border/50">
@@ -715,13 +715,13 @@ function UsabilityVisual() {
 
 function DesignSystemVisual() {
   return (
-    <div className="relative w-full h-full">
+    <div className="relative w-full h-full scale-[0.85] origin-center">
       <motion.div
-        initial={{ opacity: 0, y: 40 }}
+        initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.8 }}
-        className="absolute inset-0 bg-card/90 backdrop-blur-sm rounded-2xl border border-primary/20 overflow-hidden shadow-2xl shadow-primary/10"
+        className="absolute inset-0 bg-card/90 backdrop-blur-sm rounded-xl border border-primary/20 overflow-hidden shadow-xl shadow-primary/10"
       >
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-border/50">
@@ -813,7 +813,7 @@ function DesignSystemVisual() {
 
 function MobileVisual() {
   return (
-    <div className="relative w-full h-full flex items-center justify-center gap-6">
+    <div className="relative w-full h-full flex items-center justify-center gap-4 scale-[0.85] origin-center">
       {/* Phone mockup */}
       <motion.div
         initial={{ opacity: 0, y: 40 }}
@@ -897,13 +897,13 @@ function MobileVisual() {
 
 function WebAppVisual() {
   return (
-    <div className="relative w-full h-full">
+    <div className="relative w-full h-full scale-[0.85] origin-center">
       <motion.div
-        initial={{ opacity: 0, y: 40 }}
+        initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.8 }}
-        className="absolute inset-0 bg-card/90 backdrop-blur-sm rounded-2xl border border-primary/20 overflow-hidden shadow-2xl shadow-primary/10"
+        className="absolute inset-0 bg-card/90 backdrop-blur-sm rounded-xl border border-primary/20 overflow-hidden shadow-xl shadow-primary/10"
       >
         {/* App layout with sidebar */}
         <div className="flex h-full">
@@ -983,13 +983,13 @@ function WebAppVisual() {
 
 function EngagementVisual() {
   return (
-    <div className="relative w-full h-full">
+    <div className="relative w-full h-full scale-[0.85] origin-center">
       <motion.div
-        initial={{ opacity: 0, y: 40 }}
+        initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.8 }}
-        className="absolute inset-0 bg-card/90 backdrop-blur-sm rounded-2xl border border-primary/20 overflow-hidden shadow-2xl shadow-primary/10"
+        className="absolute inset-0 bg-card/90 backdrop-blur-sm rounded-xl border border-primary/20 overflow-hidden shadow-xl shadow-primary/10"
       >
         {/* Gamification header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-border/50">
@@ -1259,7 +1259,7 @@ export function ServicesSection() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -40 }}
               transition={{ duration: 0.6, ease: "easeInOut" }}
-              className="grid lg:grid-cols-2 gap-12 items-center"
+              className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center max-w-6xl mx-auto"
             >
               {/* Content side */}
               <div className="order-2 lg:order-1">
@@ -1335,7 +1335,7 @@ export function ServicesSection() {
                 transition={{ delay: 0.3 }}
                 className="order-1 lg:order-2 relative"
               >
-                <div className="relative aspect-[4/3] md:aspect-square lg:aspect-[4/3]">
+                <div className="relative aspect-[4/3] max-h-[320px] md:max-h-[360px] lg:max-h-[380px]">
                   {/* Glow effect behind visual */}
                   <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-transparent rounded-3xl blur-3xl transform scale-110" />
                   

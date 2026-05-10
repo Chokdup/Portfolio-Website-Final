@@ -62,9 +62,13 @@ function VideoResumeSection() {
   const [currentTime, setCurrentTime] = useState(0)
   const [duration, setDuration] = useState(0)
   const [isLoaded, setIsLoaded] = useState(false)
+  const [volume, setVolume] = useState(1)
+  const [showVolumeSlider, setShowVolumeSlider] = useState(false)
   const videoRef = useRef<HTMLVideoElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
 
   const formatTime = (time: number) => {
+    if (!time || !isFinite(time)) return "0:00"
     const minutes = Math.floor(time / 60)
     const seconds = Math.floor(time % 60)
     return `${minutes}:${seconds.toString().padStart(2, '0')}`
@@ -83,11 +87,7 @@ function VideoResumeSection() {
   }
 
   const handleVideoClick = () => {
-    if (showOverlay) {
-      handlePlayPause()
-    } else {
-      handlePlayPause()
-    }
+    handlePlayPause()
   }
 
   const handleTimeUpdate = () => {
@@ -95,25 +95,51 @@ function VideoResumeSection() {
       const current = videoRef.current.currentTime
       const dur = videoRef.current.duration
       setCurrentTime(current)
-      setProgress((current / dur) * 100)
+      if (dur && isFinite(dur)) {
+        setProgress((current / dur) * 100)
+      }
     }
   }
 
   const handleLoadedMetadata = () => {
     if (videoRef.current) {
-      setDuration(videoRef.current.duration)
+      const dur = videoRef.current.duration
+      if (dur && isFinite(dur)) {
+        setDuration(dur)
+      }
+      setIsLoaded(true)
+    }
+  }
+
+  // Also handle loadeddata and durationchange for better compatibility
+  const handleDurationChange = () => {
+    if (videoRef.current) {
+      const dur = videoRef.current.duration
+      if (dur && isFinite(dur)) {
+        setDuration(dur)
+      }
+    }
+  }
+
+  const handleCanPlay = () => {
+    if (videoRef.current) {
+      const dur = videoRef.current.duration
+      if (dur && isFinite(dur) && duration === 0) {
+        setDuration(dur)
+      }
       setIsLoaded(true)
     }
   }
 
   const handleProgressClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (videoRef.current) {
+    if (videoRef.current && videoRef.current.duration) {
       const rect = e.currentTarget.getBoundingClientRect()
       const clickX = e.clientX - rect.left
       const newProgress = (clickX / rect.width) * 100
       const newTime = (newProgress / 100) * videoRef.current.duration
       videoRef.current.currentTime = newTime
       setProgress(newProgress)
+      setCurrentTime(newTime)
     }
   }
 
@@ -124,9 +150,26 @@ function VideoResumeSection() {
     }
   }
 
-  const handleFullscreen = () => {
+  const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newVolume = parseFloat(e.target.value)
+    setVolume(newVolume)
     if (videoRef.current) {
-      if (videoRef.current.requestFullscreen) {
+      videoRef.current.volume = newVolume
+      setIsMuted(newVolume === 0)
+    }
+  }
+
+  const handleFullscreen = () => {
+    const container = containerRef.current
+    if (!container) return
+
+    if (document.fullscreenElement) {
+      document.exitFullscreen()
+    } else {
+      // Try container first for better controls visibility, fallback to video
+      if (container.requestFullscreen) {
+        container.requestFullscreen()
+      } else if (videoRef.current?.requestFullscreen) {
         videoRef.current.requestFullscreen()
       }
     }
@@ -148,6 +191,8 @@ function VideoResumeSection() {
   const handleVideoEnd = () => {
     setIsPlaying(false)
     setShowOverlay(true)
+    setProgress(0)
+    setCurrentTime(0)
   }
 
   return (
@@ -208,7 +253,7 @@ function VideoResumeSection() {
 
       {/* Video Player Container */}
       <div className="max-w-4xl mx-auto">
-        <div className="relative group">
+        <div ref={containerRef} className="relative group">
           {/* Animated glow effect */}
           <motion.div
             className="absolute -inset-2 md:-inset-3 rounded-3xl opacity-60"
@@ -272,9 +317,13 @@ function VideoResumeSection() {
                 className="absolute inset-0 w-full h-full object-cover"
                 onTimeUpdate={handleTimeUpdate}
                 onLoadedMetadata={handleLoadedMetadata}
+                onDurationChange={handleDurationChange}
+                onCanPlay={handleCanPlay}
                 onEnded={handleVideoEnd}
+                onPlay={() => setIsPlaying(true)}
+                onPause={() => setIsPlaying(false)}
                 playsInline
-                preload="metadata"
+                preload="auto"
               >
                 <source src="/videos/chokdup-video-resume.mp4" type="video/mp4" />
                 Your browser does not support the video tag.
@@ -422,36 +471,64 @@ function VideoResumeSection() {
               </span>
 
               {/* Control buttons */}
-              <div className="hidden sm:flex items-center gap-2">
+              <div className="flex items-center gap-1 sm:gap-2">
                 {/* Restart */}
                 <button
                   onClick={handleRestart}
                   className="p-2 rounded-lg hover:bg-muted transition-colors"
                   title="Restart"
                 >
-                  <RotateCcw className="w-4 h-4 text-muted-foreground hover:text-foreground" />
+                  <RotateCcw className="w-4 h-4 text-muted-foreground hover:text-foreground transition-colors" />
                 </button>
 
-                {/* Mute/Unmute */}
-                <button
-                  onClick={handleMuteToggle}
-                  className="p-2 rounded-lg hover:bg-muted transition-colors"
-                  title={isMuted ? "Unmute" : "Mute"}
+                {/* Volume control with slider */}
+                <div 
+                  className="relative flex items-center"
+                  onMouseEnter={() => setShowVolumeSlider(true)}
+                  onMouseLeave={() => setShowVolumeSlider(false)}
                 >
-                  {isMuted ? (
-                    <VolumeX className="w-4 h-4 text-muted-foreground hover:text-foreground" />
-                  ) : (
-                    <Volume2 className="w-4 h-4 text-muted-foreground hover:text-foreground" />
-                  )}
-                </button>
+                  <button
+                    onClick={handleMuteToggle}
+                    className="p-2 rounded-lg hover:bg-muted transition-colors"
+                    title={isMuted ? "Unmute" : "Mute"}
+                  >
+                    {isMuted || volume === 0 ? (
+                      <VolumeX className="w-4 h-4 text-muted-foreground hover:text-foreground transition-colors" />
+                    ) : (
+                      <Volume2 className="w-4 h-4 text-muted-foreground hover:text-foreground transition-colors" />
+                    )}
+                  </button>
+                  
+                  {/* Volume slider */}
+                  <AnimatePresence>
+                    {showVolumeSlider && (
+                      <motion.div
+                        initial={{ opacity: 0, width: 0 }}
+                        animate={{ opacity: 1, width: "auto" }}
+                        exit={{ opacity: 0, width: 0 }}
+                        className="overflow-hidden"
+                      >
+                        <input
+                          type="range"
+                          min="0"
+                          max="1"
+                          step="0.1"
+                          value={isMuted ? 0 : volume}
+                          onChange={handleVolumeChange}
+                          className="w-16 h-1 ml-1 accent-primary bg-muted rounded-full cursor-pointer"
+                        />
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
 
                 {/* Fullscreen */}
                 <button
                   onClick={handleFullscreen}
-                  className="p-2 rounded-lg hover:bg-muted transition-colors"
+                  className="p-2 rounded-lg hover:bg-muted bg-primary/10 border border-primary/30 transition-colors"
                   title="Fullscreen"
                 >
-                  <Maximize className="w-4 h-4 text-muted-foreground hover:text-foreground" />
+                  <Maximize className="w-4 h-4 text-primary hover:text-primary transition-colors" />
                 </button>
               </div>
             </div>
