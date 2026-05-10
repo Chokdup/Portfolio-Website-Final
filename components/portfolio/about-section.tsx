@@ -11,14 +11,6 @@ function seededRandom(seed: number) {
   return x - Math.floor(x)
 }
 
-const skills = [
-  { name: "User Research", level: 95 },
-  { name: "UI Design", level: 98 },
-  { name: "UX Strategy", level: 92 },
-  { name: "Prototyping", level: 96 },
-  { name: "Figma", level: 98 },
-]
-
 const highlights = [
   { icon: MapPin, label: "Based in", value: "Thimphu, Bhutan" },
   { icon: Briefcase, label: "Experience", value: "3+ Years" },
@@ -185,7 +177,7 @@ export function AboutSection() {
             </div>
 
             {/* Highlights */}
-            <div className="grid grid-cols-2 gap-4 mb-8">
+            <div className="grid grid-cols-2 gap-4">
               {highlights.map((highlight, index) => (
                 <motion.div
                   key={highlight.label}
@@ -193,7 +185,7 @@ export function AboutSection() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: index * 0.1 }}
-                  className="flex items-center gap-3 p-4 rounded-xl bg-card border border-border/50"
+                  className="flex items-center gap-3 p-4 rounded-xl bg-card border border-border/50 hover:border-primary/30 transition-colors"
                 >
                   <div className="p-2 rounded-lg bg-primary/10">
                     <highlight.icon className="w-5 h-5 text-primary" />
@@ -204,36 +196,6 @@ export function AboutSection() {
                   </div>
                 </motion.div>
               ))}
-            </div>
-
-            {/* Skills */}
-            <div>
-              <h4 className="text-lg font-bold mb-4">Core Skills</h4>
-              <div className="space-y-4">
-                {skills.map((skill, index) => (
-                  <motion.div
-                    key={skill.name}
-                    initial={{ opacity: 0, x: -20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: index * 0.1 }}
-                  >
-                    <div className="flex justify-between text-sm mb-1">
-                      <span>{skill.name}</span>
-                      <span className="text-primary">{skill.level}%</span>
-                    </div>
-                    <div className="h-2 bg-muted rounded-full overflow-hidden">
-                      <motion.div
-                        initial={{ width: 0 }}
-                        whileInView={{ width: `${skill.level}%` }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 1, delay: index * 0.1 }}
-                        className="h-full bg-gradient-to-r from-primary to-accent rounded-full"
-                      />
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
             </div>
           </motion.div>
         </div>

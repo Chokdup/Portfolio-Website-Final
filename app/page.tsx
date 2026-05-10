@@ -6,7 +6,6 @@ import { ParticleField } from "@/components/portfolio/particles"
 import { Navigation } from "@/components/portfolio/navigation"
 import { HeroSection } from "@/components/portfolio/hero-section"
 import { ServicesSection } from "@/components/portfolio/services-section"
-import { FeaturedProject } from "@/components/portfolio/featured-project"
 import { PortfolioSection } from "@/components/portfolio/portfolio-section"
 import { ProcessSection } from "@/components/portfolio/process-section"
 import { AboutSection } from "@/components/portfolio/about-section"
@@ -222,9 +221,6 @@ export default function PortfolioPage() {
 
           {/* Services / Expertise Section */}
           <ServicesSection />
-
-          {/* Featured Project - SCAN2DINE */}
-          <FeaturedProject />
 
           {/* Portfolio Section */}
           <PortfolioSection />

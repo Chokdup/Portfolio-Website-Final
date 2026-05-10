@@ -2,8 +2,9 @@
 
 import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { ArrowRight, ArrowLeft, Filter } from "lucide-react"
+import { ArrowRight, ArrowLeft, Filter, Calendar, Award } from "lucide-react"
 import Link from "next/link"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { projects } from "@/lib/projects-data"
 import { ContactModalProvider, useContactModal } from "@/components/portfolio/contact-modal-context"
@@ -11,8 +12,32 @@ import { ContactModal } from "@/components/portfolio/contact-modal"
 
 const categories = ["All", "Web Apps", "Mobile Apps", "Dashboard"]
 
+// Project mockup images mapping
+const projectImages: Record<string, string[]> = {
+  "scan2dine": ["/projects/scan2dine-home.jpg", "/projects/scan2dine-about.jpg"],
+  "qube": ["/projects/qube-home.jpg", "/projects/qube-onboarding.jpg"],
+  "ndp": ["/projects/ndp-login-dashboard.png", "/projects/ndp-screens-1.png"],
+  "q-less": ["/projects/qless-landing.png", "/projects/qless-patient-dashboard.png"],
+  "green-guardian": ["/projects/greenguardian-dashboard.png"],
+}
+
 function ProjectCard({ project, index }: { project: typeof projects[0]; index: number }) {
   const [isHovered, setIsHovered] = useState(false)
+  const [currentImageIndex, setCurrentImageIndex] = useState(0)
+  const images = projectImages[project.slug] || []
+  
+  // Cycle through images on hover
+  const handleMouseEnter = () => {
+    setIsHovered(true)
+    if (images.length > 1) {
+      const interval = setInterval(() => {
+        setCurrentImageIndex((prev) => (prev + 1) % images.length)
+      }, 1500)
+      return () => clearInterval(interval)
+    }
+  }
+
+  const isFeatured = project.slug === "scan2dine"
 
   return (
     <motion.div
@@ -23,46 +48,42 @@ function ProjectCard({ project, index }: { project: typeof projects[0]; index: n
     >
       <Link href={`/projects/${project.slug}`}>
         <motion.div
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={() => {
+            setIsHovered(false)
+            setCurrentImageIndex(0)
+          }}
           whileHover={{ y: -8 }}
           transition={{ duration: 0.3 }}
           className="relative rounded-2xl overflow-hidden cursor-pointer"
         >
-          {/* Card Background with 3D depth effect */}
-          <div className={`aspect-[4/3] bg-gradient-to-br ${project.color} border border-primary/20 relative`}>
-            {/* Animated background pattern */}
-            <div className="absolute inset-0 overflow-hidden">
-              <motion.div
-                className="absolute inset-0"
-                animate={{
-                  background: isHovered 
-                    ? "radial-gradient(circle at 50% 50%, rgba(0, 102, 255, 0.15) 0%, transparent 70%)"
-                    : "radial-gradient(circle at 50% 50%, rgba(0, 102, 255, 0.05) 0%, transparent 70%)"
-                }}
-                transition={{ duration: 0.5 }}
-              />
-              {/* Floating geometric elements */}
-              {[...Array(4)].map((_, i) => (
-                <motion.div
-                  key={i}
-                  className="absolute w-24 h-24 border border-primary/10 rounded-lg"
-                  style={{
-                    left: `${20 + i * 20}%`,
-                    top: `${15 + (i % 2) * 40}%`,
-                  }}
-                  animate={{
-                    rotate: isHovered ? [0, 90] : [0, 360],
-                    scale: isHovered ? [1, 1.1, 1] : [1, 1.05, 1],
-                  }}
-                  transition={{
-                    duration: isHovered ? 0.6 : 20,
-                    repeat: isHovered ? 0 : Infinity,
-                    ease: isHovered ? "easeOut" : "linear",
-                  }}
-                />
-              ))}
+          {/* Card Background with depth effect */}
+          <div className={`aspect-[4/3] bg-gradient-to-br ${project.color} border border-primary/20 relative overflow-hidden`}>
+            {/* Animated grid pattern */}
+            <div className="absolute inset-0 opacity-30">
+              <div className="absolute inset-0" style={{
+                backgroundImage: `linear-gradient(rgba(0,102,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(0,102,255,0.1) 1px, transparent 1px)`,
+                backgroundSize: '30px 30px'
+              }} />
             </div>
+
+            {/* Floating geometric elements */}
+            <motion.div
+              className="absolute top-6 right-6 w-16 h-16 border border-primary/20 rounded-lg"
+              animate={{
+                rotate: isHovered ? 45 : 0,
+                scale: isHovered ? 1.1 : 1,
+              }}
+              transition={{ duration: 0.4 }}
+            />
+            <motion.div
+              className="absolute bottom-12 left-6 w-10 h-10 border border-primary/15 rounded-full"
+              animate={{
+                y: isHovered ? -10 : 0,
+                scale: isHovered ? 1.2 : 1,
+              }}
+              transition={{ duration: 0.4 }}
+            />
 
             {/* Project preview mockup */}
             <motion.div 
@@ -73,7 +94,7 @@ function ProjectCard({ project, index }: { project: typeof projects[0]; index: n
               }}
               transition={{ duration: 0.4, ease: "easeOut" }}
             >
-              <div className="w-full max-w-[85%] bg-card/90 backdrop-blur-sm rounded-xl border border-primary/30 shadow-2xl overflow-hidden">
+              <div className="w-full max-w-[90%] bg-card/95 backdrop-blur-sm rounded-xl border border-primary/30 shadow-2xl shadow-primary/10 overflow-hidden">
                 {/* Browser chrome */}
                 <div className="flex items-center gap-2 px-4 py-2.5 border-b border-border/50 bg-muted/50">
                   <div className="flex gap-1.5">
@@ -82,33 +103,86 @@ function ProjectCard({ project, index }: { project: typeof projects[0]; index: n
                     <div className="w-2.5 h-2.5 rounded-full bg-green-500/60" />
                   </div>
                   <div className="flex-1 mx-3">
-                    <div className="h-4 bg-background/60 rounded-md" />
+                    <div className="h-4 bg-background/60 rounded-md flex items-center px-2">
+                      <span className="text-[10px] text-muted-foreground truncate">{project.slug}.app</span>
+                    </div>
                   </div>
                 </div>
-                {/* Content preview */}
-                <div className="p-4 space-y-3">
-                  <div className="h-3 w-2/3 bg-primary/30 rounded" />
-                  <div className="h-2.5 w-1/2 bg-muted/50 rounded" />
-                  <div className="grid grid-cols-3 gap-2 mt-4">
-                    <div className="h-14 bg-primary/20 rounded-lg" />
-                    <div className="h-14 bg-primary/15 rounded-lg" />
-                    <div className="h-14 bg-primary/10 rounded-lg" />
+                
+                {/* Project screenshot */}
+                {images.length > 0 ? (
+                  <div className="relative aspect-[16/10]">
+                    <AnimatePresence mode="wait">
+                      <motion.div
+                        key={currentImageIndex}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="absolute inset-0"
+                      >
+                        <Image
+                          src={images[currentImageIndex]}
+                          alt={`${project.title} preview`}
+                          fill
+                          className="object-cover object-top"
+                          sizes="(max-width: 768px) 100vw, 33vw"
+                        />
+                      </motion.div>
+                    </AnimatePresence>
+                    {/* Image dots indicator */}
+                    {images.length > 1 && (
+                      <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
+                        {images.map((_, idx) => (
+                          <div
+                            key={idx}
+                            className={`w-1.5 h-1.5 rounded-full transition-all ${
+                              currentImageIndex === idx ? "bg-primary w-4" : "bg-primary/40"
+                            }`}
+                          />
+                        ))}
+                      </div>
+                    )}
                   </div>
-                </div>
+                ) : (
+                  /* Fallback content preview */
+                  <div className="p-4 space-y-3">
+                    <div className="h-3 w-2/3 bg-primary/30 rounded" />
+                    <div className="h-2.5 w-1/2 bg-muted/50 rounded" />
+                    <div className="grid grid-cols-3 gap-2 mt-4">
+                      <div className="h-14 bg-primary/20 rounded-lg" />
+                      <div className="h-14 bg-primary/15 rounded-lg" />
+                      <div className="h-14 bg-primary/10 rounded-lg" />
+                    </div>
+                  </div>
+                )}
               </div>
             </motion.div>
 
+            {/* Award badge for featured */}
+            {isFeatured && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="absolute top-4 left-4 flex items-center gap-2 px-3 py-1.5 bg-amber-500/90 text-amber-950 rounded-full font-bold text-xs shadow-lg shadow-amber-500/25"
+              >
+                <Award className="w-3.5 h-3.5" />
+                Best Project Award
+              </motion.div>
+            )}
+
             {/* Year badge */}
             <motion.div
-              className="absolute top-4 left-4 px-3 py-1.5 bg-background/80 backdrop-blur-sm border border-primary/20 rounded-full"
+              className={`absolute ${isFeatured ? "top-4 right-4" : "top-4 left-4"} flex items-center gap-1.5 px-3 py-1.5 bg-background/80 backdrop-blur-sm border border-primary/20 rounded-full`}
               animate={{ scale: isHovered ? 1.05 : 1 }}
             >
+              <Calendar className="w-3 h-3 text-primary" />
               <span className="text-xs font-medium text-muted-foreground">{project.year}</span>
             </motion.div>
 
             {/* Metric badge */}
             <motion.div
-              className="absolute top-4 right-4 px-3 py-1.5 bg-primary/20 backdrop-blur-sm border border-primary/30 rounded-full"
+              className={`absolute ${isFeatured ? "bottom-4 right-4" : "top-4 right-4"} px-3 py-1.5 bg-primary/20 backdrop-blur-sm border border-primary/30 rounded-full`}
               animate={{ scale: isHovered ? 1.1 : 1 }}
               transition={{ duration: 0.3 }}
             >
@@ -137,6 +211,11 @@ function ProjectCard({ project, index }: { project: typeof projects[0]; index: n
                 </span>
               </motion.div>
             </motion.div>
+
+            {/* Glow effect */}
+            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
+              <div className="absolute inset-0 bg-gradient-to-t from-primary/10 to-transparent" />
+            </div>
           </div>
 
           {/* Card Content */}
@@ -198,7 +277,7 @@ function ProjectsContent() {
         className="fixed top-6 left-6 z-50"
       >
         <Link href="/#portfolio">
-          <Button variant="outline" size="sm" className="bg-background/80 backdrop-blur-sm border-primary/20 hover:bg-primary/10">
+          <Button variant="outline" size="sm" className="bg-background/80 backdrop-blur-sm border-primary/20 hover:bg-primary/10 hover:border-primary/30">
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Home
           </Button>
@@ -349,7 +428,7 @@ function ProjectsContent() {
                 <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
               <Link href="/#about">
-                <Button variant="outline" size="lg" className="border-primary/30 hover:bg-primary/10">
+                <Button variant="outline" size="lg" className="border-primary/30 hover:bg-primary/10 hover:border-primary/50">
                   Learn About Me
                 </Button>
               </Link>

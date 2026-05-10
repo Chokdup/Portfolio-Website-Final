@@ -34,24 +34,25 @@ export function Footer() {
   return (
     <footer className="relative pt-20 pb-8 border-t border-border/30">
       {/* Background glow */}
-      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-primary/5 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-0 left-1/4 w-[400px] h-[200px] bg-primary/5 rounded-full blur-3xl pointer-events-none" />
 
       <div className="container mx-auto px-6 relative z-10">
-        <div className="grid md:grid-cols-3 gap-12 mb-12">
-          {/* Brand */}
+        <div className="grid md:grid-cols-12 gap-8 md:gap-12 mb-12">
+          {/* Brand - Left aligned */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
+            className="md:col-span-5"
           >
             <a href="#home" className="text-2xl font-bold inline-block mb-4">
               <span className="text-primary">C</span>hokdup
             </a>
-            <p className="text-muted-foreground text-sm leading-relaxed mb-6">
+            <p className="text-muted-foreground text-sm leading-relaxed mb-6 max-w-sm">
               UI/UX Designer helping startups increase user retention through thoughtful, user-centric design solutions.
             </p>
             {/* Social Links */}
-            <div className="flex gap-3">
+            <div className="flex gap-2">
               {socialLinks.map((social) => (
                 <motion.a
                   key={social.label}
@@ -69,16 +70,16 @@ export function Footer() {
             </div>
           </motion.div>
 
-          {/* Quick Links - Centered */}
+          {/* Quick Links - Left of center */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.1 }}
-            className="text-center"
+            className="md:col-span-3"
           >
-            <h4 className="font-bold mb-4">Quick Links</h4>
-            <nav className="space-y-3">
+            <h4 className="font-bold mb-4 text-sm uppercase tracking-wider text-foreground">Quick Links</h4>
+            <nav className="flex flex-col gap-2">
               {quickLinks.map((link) => (
                 <a
                   key={link.label}
@@ -87,7 +88,7 @@ export function Footer() {
                     e.preventDefault()
                     scrollToSection(link.href)
                   }}
-                  className="block text-muted-foreground hover:text-primary transition-colors text-sm"
+                  className="text-muted-foreground hover:text-primary transition-colors text-sm w-fit"
                 >
                   {link.label}
                 </a>
@@ -95,21 +96,21 @@ export function Footer() {
             </nav>
           </motion.div>
 
-          {/* CTA - Right aligned */}
+          {/* CTA - Right side */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.2 }}
-            className="md:text-right"
+            className="md:col-span-4"
           >
-            <h4 className="font-bold mb-4">Start a Project</h4>
+            <h4 className="font-bold mb-4 text-sm uppercase tracking-wider text-foreground">Start a Project</h4>
             <p className="text-muted-foreground text-sm mb-4">
               Have an idea? Let&apos;s bring it to life together.
             </p>
             <a
               href="mailto:chokdup15cr@gmail.com"
-              className="inline-flex items-center gap-2 text-primary hover:underline"
+              className="inline-flex items-center gap-2 text-primary hover:underline text-sm font-medium"
             >
               <Mail className="w-4 h-4" />
               chokdup15cr@gmail.com
@@ -118,8 +119,8 @@ export function Footer() {
         </div>
 
         {/* Bottom bar */}
-        <div className="flex flex-col md:flex-row items-center justify-between pt-8 border-t border-border/30">
-          <p className="text-sm text-muted-foreground mb-4 md:mb-0">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between pt-8 border-t border-border/30 gap-4">
+          <p className="text-sm text-muted-foreground">
             © {new Date().getFullYear()} Chokdup. All rights reserved.
           </p>
 

@@ -2,30 +2,40 @@
 
 import { useState, useMemo } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { ArrowRight } from "lucide-react"
+import { ArrowRight, Calendar, ExternalLink, Award } from "lucide-react"
 import Link from "next/link"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { projects } from "@/lib/projects-data"
 
-// Deterministic pseudo-random number generator for consistent SSR/client rendering
-function seededRandom(seed: number) {
-  const x = Math.sin(seed) * 10000
-  return x - Math.floor(x)
-}
-
 const categories = ["All", "Web Apps", "Mobile Apps", "Dashboard"]
+
+// Project mockup images mapping
+const projectImages: Record<string, string[]> = {
+  "scan2dine": ["/projects/scan2dine-home.jpg", "/projects/scan2dine-about.jpg"],
+  "qube": ["/projects/qube-home.jpg", "/projects/qube-onboarding.jpg"],
+  "ndp": ["/projects/ndp-login-dashboard.png", "/projects/ndp-screens-1.png"],
+  "q-less": ["/projects/qless-landing.png", "/projects/qless-patient-dashboard.png"],
+  "green-guardian": ["/projects/greenguardian-dashboard.png"],
+}
 
 function ProjectCard({ project, index }: { project: typeof projects[0]; index: number }) {
   const [isHovered, setIsHovered] = useState(false)
+  const [currentImageIndex, setCurrentImageIndex] = useState(0)
+  const images = projectImages[project.slug] || []
+  
+  // Cycle through images on hover
+  const handleMouseEnter = () => {
+    setIsHovered(true)
+    if (images.length > 1) {
+      const interval = setInterval(() => {
+        setCurrentImageIndex((prev) => (prev + 1) % images.length)
+      }, 1500)
+      return () => clearInterval(interval)
+    }
+  }
 
-  // Generate deterministic positions based on project id and index
-  // Round to 2 decimal places to avoid hydration mismatch from floating point precision
-  const bgElements = useMemo(() => {
-    return [...Array(8)].map((_, i) => ({
-      left: `${Math.round(seededRandom(project.id * 100 + i * 17) * 10000) / 100}%`,
-      top: `${Math.round(seededRandom(project.id * 100 + i * 23) * 10000) / 100}%`,
-    }))
-  }, [project.id])
+  const isFeatured = project.slug === "scan2dine"
 
   return (
     <Link href={`/projects/${project.slug}`}>
@@ -34,113 +44,215 @@ function ProjectCard({ project, index }: { project: typeof projects[0]; index: n
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.5, delay: index * 0.1 }}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-        className="group relative rounded-2xl overflow-hidden cursor-pointer"
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={() => {
+          setIsHovered(false)
+          setCurrentImageIndex(0)
+        }}
+        className={`group relative rounded-2xl overflow-hidden cursor-pointer ${
+          isFeatured ? "md:col-span-2 md:row-span-2" : ""
+        }`}
       >
-        {/* Card Background */}
-        <div className={`aspect-[4/3] bg-gradient-to-br ${project.color} border border-primary/20 relative`}>
-          {/* Animated background */}
-          <div className="absolute inset-0 overflow-hidden">
-            {bgElements.map((pos, i) => (
-              <motion.div
-                key={i}
-                className="absolute w-32 h-32 border border-primary/10 rounded-lg"
-                style={{
-                  left: pos.left,
-                  top: pos.top,
-                }}
-                animate={{
-                  rotate: [0, 360],
-                  scale: [1, 1.2, 1],
-                }}
-                transition={{
-                  duration: 20,
-                  repeat: Infinity,
-                  delay: i * 0.5,
-                }}
-              />
-            ))}
-          </div>
+        {/* Card Container */}
+        <motion.div
+          whileHover={{ y: -8 }}
+          transition={{ duration: 0.3 }}
+          className="h-full"
+        >
+          {/* Image Section */}
+          <div className={`relative ${isFeatured ? "aspect-[16/10]" : "aspect-[4/3]"} bg-gradient-to-br ${project.color} border border-primary/20 overflow-hidden`}>
+            {/* Animated background grid */}
+            <div className="absolute inset-0 opacity-30">
+              <div className="absolute inset-0" style={{
+                backgroundImage: `linear-gradient(rgba(0,102,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(0,102,255,0.1) 1px, transparent 1px)`,
+                backgroundSize: '30px 30px'
+              }} />
+            </div>
 
-          {/* Project mockup */}
-          <div className="absolute inset-4 flex items-center justify-center">
+            {/* Floating geometric elements */}
             <motion.div
-              animate={{ y: isHovered ? -10 : 0 }}
-              transition={{ duration: 0.3 }}
-              className="w-full max-w-[80%] bg-card/80 backdrop-blur-sm rounded-lg border border-primary/30 shadow-2xl overflow-hidden"
-            >
-              {/* Browser chrome */}
-              <div className="flex items-center gap-2 px-3 py-2 border-b border-border/50 bg-muted/50">
-                <div className="flex gap-1.5">
-                  <div className="w-2.5 h-2.5 rounded-full bg-red-500/50" />
-                  <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/50" />
-                  <div className="w-2.5 h-2.5 rounded-full bg-green-500/50" />
-                </div>
-                <div className="flex-1 mx-2">
-                  <div className="h-4 bg-background/50 rounded-sm" />
-                </div>
-              </div>
-              {/* Content placeholder */}
-              <div className="p-4 space-y-3">
-                <div className="h-3 w-3/4 bg-primary/30 rounded" />
-                <div className="h-3 w-1/2 bg-muted/50 rounded" />
-                <div className="grid grid-cols-3 gap-2 mt-4">
-                  <div className="h-12 bg-primary/20 rounded" />
-                  <div className="h-12 bg-primary/15 rounded" />
-                  <div className="h-12 bg-primary/10 rounded" />
-                </div>
-              </div>
-            </motion.div>
-          </div>
+              className="absolute top-6 right-6 w-16 h-16 border border-primary/20 rounded-lg"
+              animate={{
+                rotate: isHovered ? 45 : 0,
+                scale: isHovered ? 1.1 : 1,
+              }}
+              transition={{ duration: 0.4 }}
+            />
+            <motion.div
+              className="absolute bottom-12 left-6 w-12 h-12 border border-primary/15 rounded-full"
+              animate={{
+                y: isHovered ? -10 : 0,
+                scale: isHovered ? 1.2 : 1,
+              }}
+              transition={{ duration: 0.4 }}
+            />
 
-          {/* Metric badge */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="absolute top-4 right-4 px-3 py-1.5 bg-primary/20 backdrop-blur-sm border border-primary/30 rounded-full"
-          >
-            <span className="text-xs font-medium text-primary">{project.metrics}</span>
-          </motion.div>
-
-          {/* Hover overlay */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: isHovered ? 1 : 0 }}
-            transition={{ duration: 0.3 }}
-            className="absolute inset-0 bg-background/90 backdrop-blur-sm flex items-center justify-center"
-          >
-            <span className="px-6 py-3 bg-primary text-primary-foreground rounded-lg font-medium flex items-center gap-2">
-              View Case Study
-              <ArrowRight className="w-4 h-4" />
-            </span>
-          </motion.div>
-        </div>
-
-        {/* Card Content */}
-        <div className="p-6 bg-card border border-t-0 border-primary/10 rounded-b-2xl">
-          <div className="flex items-center gap-2 mb-3">
-            <span className="text-xs font-medium text-primary uppercase tracking-wider">
-              {project.category}
-            </span>
-          </div>
-          <h3 className="text-xl font-bold mb-2 group-hover:text-primary transition-colors">
-            {project.title}
-          </h3>
-          <p className="text-muted-foreground text-sm mb-4 line-clamp-2">
-            {project.description}
-          </p>
-          <div className="flex flex-wrap gap-2">
-            {project.tags.map((tag) => (
-              <span
-                key={tag}
-                className="text-xs px-2 py-1 bg-muted rounded-md text-muted-foreground"
+            {/* Project mockup preview */}
+            <div className="absolute inset-6 flex items-center justify-center">
+              <motion.div
+                animate={{ y: isHovered ? -15 : 0, scale: isHovered ? 1.02 : 1 }}
+                transition={{ duration: 0.4 }}
+                className={`w-full ${isFeatured ? "max-w-[85%]" : "max-w-[90%]"} bg-card/95 backdrop-blur-sm rounded-xl border border-primary/30 shadow-2xl shadow-primary/10 overflow-hidden`}
               >
-                {tag}
-              </span>
-            ))}
+                {/* Browser chrome */}
+                <div className="flex items-center gap-2 px-3 py-2.5 border-b border-border/50 bg-muted/50">
+                  <div className="flex gap-1.5">
+                    <div className="w-2.5 h-2.5 rounded-full bg-red-500/60" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/60" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-green-500/60" />
+                  </div>
+                  <div className="flex-1 mx-2">
+                    <div className="h-4 bg-background/60 rounded-md flex items-center px-2">
+                      <span className="text-[10px] text-muted-foreground truncate">{project.slug}.app</span>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Project screenshot */}
+                {images.length > 0 ? (
+                  <div className={`relative ${isFeatured ? "aspect-video" : "aspect-[16/10]"}`}>
+                    <AnimatePresence mode="wait">
+                      <motion.div
+                        key={currentImageIndex}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="absolute inset-0"
+                      >
+                        <Image
+                          src={images[currentImageIndex]}
+                          alt={`${project.title} preview`}
+                          fill
+                          className="object-cover object-top"
+                          sizes={isFeatured ? "(max-width: 768px) 100vw, 66vw" : "(max-width: 768px) 100vw, 33vw"}
+                        />
+                      </motion.div>
+                    </AnimatePresence>
+                    {/* Image dots indicator */}
+                    {images.length > 1 && (
+                      <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
+                        {images.map((_, idx) => (
+                          <div
+                            key={idx}
+                            className={`w-1.5 h-1.5 rounded-full transition-all ${
+                              currentImageIndex === idx ? "bg-primary w-4" : "bg-primary/40"
+                            }`}
+                          />
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  /* Fallback content preview */
+                  <div className="p-4 space-y-3">
+                    <div className="h-3 w-3/4 bg-primary/30 rounded" />
+                    <div className="h-3 w-1/2 bg-muted/50 rounded" />
+                    <div className="grid grid-cols-3 gap-2 mt-4">
+                      <div className="h-12 bg-primary/20 rounded" />
+                      <div className="h-12 bg-primary/15 rounded" />
+                      <div className="h-12 bg-primary/10 rounded" />
+                    </div>
+                  </div>
+                )}
+              </motion.div>
+            </div>
+
+            {/* Award badge for featured */}
+            {isFeatured && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="absolute top-4 left-4 flex items-center gap-2 px-3 py-1.5 bg-amber-500/90 text-amber-950 rounded-full font-bold text-xs shadow-lg shadow-amber-500/25"
+              >
+                <Award className="w-3.5 h-3.5" />
+                Best Project Award
+              </motion.div>
+            )}
+
+            {/* Year badge */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className={`absolute ${isFeatured ? "top-4 right-4" : "top-4 left-4"} flex items-center gap-1.5 px-3 py-1.5 bg-background/80 backdrop-blur-sm border border-primary/20 rounded-full`}
+            >
+              <Calendar className="w-3 h-3 text-primary" />
+              <span className="text-xs font-medium text-muted-foreground">{project.year}</span>
+            </motion.div>
+
+            {/* Metric badge */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className={`absolute ${isFeatured ? "bottom-4 right-4" : "top-4 right-4"} px-3 py-1.5 bg-primary/20 backdrop-blur-sm border border-primary/30 rounded-full`}
+            >
+              <span className="text-xs font-bold text-primary">{project.metrics}</span>
+            </motion.div>
+
+            {/* Hover overlay */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: isHovered ? 1 : 0 }}
+              transition={{ duration: 0.3 }}
+              className="absolute inset-0 bg-background/95 backdrop-blur-sm flex items-center justify-center"
+            >
+              <motion.div
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: isHovered ? 0 : 20, opacity: isHovered ? 1 : 0 }}
+                transition={{ duration: 0.3, delay: 0.1 }}
+                className="text-center px-6"
+              >
+                <p className="text-muted-foreground text-sm mb-4 line-clamp-3">
+                  {project.hook}
+                </p>
+                <span className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-xl font-medium shadow-lg shadow-primary/25 group-hover:shadow-primary/40 transition-shadow">
+                  View Case Study
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </span>
+              </motion.div>
+            </motion.div>
+
+            {/* Glow effect */}
+            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
+              <div className="absolute inset-0 bg-gradient-to-t from-primary/10 to-transparent" />
+            </div>
           </div>
-        </div>
+
+          {/* Card Content */}
+          <div className="p-6 bg-card border border-t-0 border-primary/10 rounded-b-2xl">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-xs font-medium text-primary uppercase tracking-wider">
+                {project.category}
+              </span>
+              <div className="flex gap-1">
+                {project.contributions.slice(0, 2).map((contrib) => (
+                  <span
+                    key={contrib}
+                    className="text-[10px] px-2 py-0.5 bg-primary/10 border border-primary/20 rounded-full text-primary"
+                  >
+                    {contrib}
+                  </span>
+                ))}
+              </div>
+            </div>
+            <h3 className={`${isFeatured ? "text-2xl" : "text-xl"} font-bold mb-2 group-hover:text-primary transition-colors`}>
+              {project.title}
+            </h3>
+            <p className="text-muted-foreground text-sm mb-4 line-clamp-2">
+              {project.description}
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {project.tags.slice(0, isFeatured ? 4 : 3).map((tag) => (
+                <span
+                  key={tag}
+                  className="text-xs px-2.5 py-1 bg-muted rounded-md text-muted-foreground"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          </div>
+        </motion.div>
       </motion.div>
     </Link>
   )
@@ -149,10 +261,18 @@ function ProjectCard({ project, index }: { project: typeof projects[0]; index: n
 export function PortfolioSection() {
   const [activeCategory, setActiveCategory] = useState("All")
 
-  const filteredProjects =
-    activeCategory === "All"
+  const filteredProjects = useMemo(() => {
+    return activeCategory === "All"
       ? projects
       : projects.filter((p) => p.category === activeCategory)
+  }, [activeCategory])
+
+  // Reorder to put SCAN2DINE first for featured treatment
+  const sortedProjects = useMemo(() => {
+    const scan2dine = filteredProjects.find(p => p.slug === "scan2dine")
+    const others = filteredProjects.filter(p => p.slug !== "scan2dine")
+    return scan2dine ? [scan2dine, ...others] : filteredProjects
+  }, [filteredProjects])
 
   return (
     <section id="portfolio" className="py-24 lg:py-32 relative">
@@ -189,21 +309,23 @@ export function PortfolioSection() {
           className="flex flex-wrap justify-center gap-3 mb-12"
         >
           {categories.map((category) => (
-            <button
+            <motion.button
               key={category}
               onClick={() => setActiveCategory(category)}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all ${
                 activeCategory === category
                   ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25"
-                  : "bg-muted text-muted-foreground hover:bg-muted/80 hover:text-foreground"
+                  : "bg-card border border-border/50 text-muted-foreground hover:border-primary/30 hover:text-foreground"
               }`}
             >
               {category}
-            </button>
+            </motion.button>
           ))}
         </motion.div>
 
-        {/* Projects Grid */}
+        {/* Projects Grid - Bento Style */}
         <AnimatePresence mode="wait">
           <motion.div
             key={activeCategory}
@@ -211,9 +333,9 @@ export function PortfolioSection() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
+            className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-fr"
           >
-            {filteredProjects.map((project, index) => (
+            {sortedProjects.map((project, index) => (
               <ProjectCard key={project.id} project={project} index={index} />
             ))}
           </motion.div>
@@ -231,10 +353,10 @@ export function PortfolioSection() {
             <Button
               variant="outline"
               size="lg"
-              className="border-primary/30 hover:bg-primary/10 group"
+              className="border-primary/30 hover:bg-primary/10 hover:border-primary/50 group px-8"
             >
               View All Projects
-              <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+              <ExternalLink className="w-4 h-4 ml-2 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
             </Button>
           </Link>
         </motion.div>

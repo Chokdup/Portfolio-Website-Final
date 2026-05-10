@@ -9,7 +9,7 @@ interface Step {
   description: string
   icon: LucideIcon
   details: string[]
-  image: string
+  color: string
 }
 
 const steps: Step[] = [
@@ -19,7 +19,7 @@ const steps: Step[] = [
     description: "Deep dive into understanding your business goals, target users, and market landscape through research and stakeholder interviews.",
     icon: Search,
     details: ["User Research", "Competitive Analysis", "Stakeholder Interviews", "Goal Definition"],
-    image: "/images/process-discovery.jpg",
+    color: "from-cyan-500/30 to-blue-500/20",
   },
   {
     number: "02",
@@ -27,7 +27,7 @@ const steps: Step[] = [
     description: "Synthesize research insights into actionable strategies, defining user journeys and information architecture.",
     icon: Lightbulb,
     details: ["User Personas", "Journey Mapping", "Information Architecture", "Feature Prioritization"],
-    image: "/images/process-strategy.jpg",
+    color: "from-violet-500/30 to-purple-500/20",
   },
   {
     number: "03",
@@ -35,7 +35,7 @@ const steps: Step[] = [
     description: "Create intuitive interfaces through iterative design, from wireframes to high-fidelity prototypes with user validation.",
     icon: PenTool,
     details: ["Wireframing", "Visual Design", "Prototyping", "Usability Testing"],
-    image: "/images/process-design.jpg",
+    color: "from-emerald-500/30 to-teal-500/20",
   },
   {
     number: "04",
@@ -43,11 +43,14 @@ const steps: Step[] = [
     description: "Hand off polished designs with comprehensive documentation, supporting development and measuring success post-launch.",
     icon: Rocket,
     details: ["Design Specs", "Developer Handoff", "Quality Assurance", "Success Metrics"],
-    image: "/images/process-delivery.jpg",
+    color: "from-amber-500/30 to-orange-500/20",
   },
 ]
 
+// Modern icon-based visual component
 function ProcessVisual({ step, index }: { step: Step; index: number }) {
+  const IconComponent = step.icon
+
   return (
     <div
       className={`${
@@ -55,42 +58,79 @@ function ProcessVisual({ step, index }: { step: Step; index: number }) {
       } hidden lg:block`}
     >
       <motion.div
-        whileHover={{ scale: 1.03 }}
+        whileHover={{ scale: 1.02 }}
         transition={{ duration: 0.4, ease: "easeOut" }}
         className="aspect-[4/3] rounded-2xl border border-primary/20 relative overflow-hidden group cursor-pointer"
       >
-        {/* Image with hover animation */}
-        <motion.img
-          src={step.image}
-          alt={`${step.title} process illustration`}
-          className="absolute inset-0 w-full h-full object-cover"
-          initial={{ scale: 1 }}
-          whileHover={{ scale: 1.1 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-        />
+        {/* Gradient background */}
+        <div className={`absolute inset-0 bg-gradient-to-br ${step.color}`} />
         
-        {/* Overlay gradient */}
-        <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-background/20 to-transparent opacity-60 group-hover:opacity-40 transition-opacity duration-400" />
+        {/* Animated grid pattern */}
+        <div className="absolute inset-0 opacity-40">
+          <div className="absolute inset-0" style={{
+            backgroundImage: `linear-gradient(rgba(0,102,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(0,102,255,0.1) 1px, transparent 1px)`,
+            backgroundSize: '24px 24px'
+          }} />
+        </div>
         
-        {/* Glow effect on hover */}
-        <div className="absolute inset-0 bg-primary/0 group-hover:bg-primary/10 transition-colors duration-400" />
-        
-        {/* Icon overlay */}
-        <div className="absolute bottom-4 right-4">
+        {/* Central icon display */}
+        <div className="absolute inset-0 flex items-center justify-center">
           <motion.div
-            className="p-3 rounded-xl bg-background/80 backdrop-blur-sm border border-primary/30"
-            whileHover={{ scale: 1.1, rotate: 5 }}
+            className="relative"
+            animate={{ scale: [1, 1.05, 1] }}
+            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
           >
-            <step.icon className="w-6 h-6 text-primary" />
+            {/* Glowing rings */}
+            <motion.div
+              className="absolute -inset-8 border border-primary/20 rounded-full"
+              animate={{ rotate: 360 }}
+              transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+            />
+            <motion.div
+              className="absolute -inset-16 border border-primary/10 rounded-full"
+              animate={{ rotate: -360 }}
+              transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
+            />
+            
+            {/* Icon container */}
+            <div className="w-20 h-20 rounded-2xl bg-background/90 backdrop-blur-sm border border-primary/30 flex items-center justify-center shadow-xl shadow-primary/20">
+              <IconComponent className="w-10 h-10 text-primary" />
+            </div>
           </motion.div>
         </div>
         
-        {/* Step number */}
-        <div className="absolute top-4 left-4">
-          <span className="text-5xl font-bold text-primary/20 group-hover:text-primary/40 transition-colors duration-400">
+        {/* Floating elements */}
+        <motion.div
+          className="absolute top-8 right-8 w-8 h-8 rounded-lg bg-background/60 backdrop-blur-sm border border-primary/20 flex items-center justify-center"
+          animate={{ y: [0, -8, 0], rotate: [0, 5, 0] }}
+          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+        >
+          <div className="w-3 h-3 rounded bg-primary/40" />
+        </motion.div>
+        
+        <motion.div
+          className="absolute bottom-8 left-8 w-10 h-10 rounded-full bg-background/60 backdrop-blur-sm border border-primary/20 flex items-center justify-center"
+          animate={{ y: [0, 8, 0], x: [0, 4, 0] }}
+          transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+        >
+          <div className="w-4 h-4 rounded-full bg-primary/30" />
+        </motion.div>
+        
+        <motion.div
+          className="absolute top-1/2 left-8 w-6 h-6 rounded bg-primary/20 border border-primary/30"
+          animate={{ rotate: [0, 90, 0] }}
+          transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+        />
+        
+        {/* Step number watermark */}
+        <div className="absolute bottom-4 right-4">
+          <span className="text-6xl font-bold text-primary/10 group-hover:text-primary/20 transition-colors duration-400">
             {step.number}
           </span>
         </div>
+        
+        {/* Glow effect on hover */}
+        <div className="absolute inset-0 bg-primary/0 group-hover:bg-primary/5 transition-colors duration-400" />
       </motion.div>
     </div>
   )
@@ -150,15 +190,15 @@ export function ProcessSection() {
                     {/* Icon */}
                     <motion.div
                       whileHover={{ scale: 1.1, rotate: 5 }}
-                      className="flex-shrink-0 w-16 h-16 rounded-2xl bg-primary/10 border border-primary/30 flex items-center justify-center"
+                      className={`flex-shrink-0 w-14 h-14 rounded-xl bg-gradient-to-br ${step.color} border border-primary/30 flex items-center justify-center shadow-lg`}
                     >
-                      <step.icon className="w-7 h-7 text-primary" />
+                      <step.icon className="w-6 h-6 text-primary" />
                     </motion.div>
 
-                    <div>
+                    <div className="flex-1">
                       {/* Number & Title */}
                       <div className="flex items-center gap-3 mb-3">
-                        <span className="text-4xl font-bold text-primary/30">{step.number}</span>
+                        <span className="text-3xl font-bold text-primary/40">{step.number}</span>
                         <h3 className="text-2xl font-bold">{step.title}</h3>
                       </div>
 
