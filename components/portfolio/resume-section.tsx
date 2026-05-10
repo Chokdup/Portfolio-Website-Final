@@ -1,7 +1,8 @@
 "use client"
 
-import { motion } from "framer-motion"
-import { Briefcase, GraduationCap, Download, ExternalLink, Award, Play, Video } from "lucide-react"
+import { useState, useRef } from "react"
+import { motion, AnimatePresence } from "framer-motion"
+import { Briefcase, GraduationCap, Download, ExternalLink, Award, Play, Video, Pause, Volume2, VolumeX, Maximize, RotateCcw } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 const experience = [
@@ -52,6 +53,417 @@ const achievements = [
   { name: "Best Project Award - SCAN2DINE", year: "2025", description: "Awarded for developing a QR-based digital menu web application" },
   { name: "International Cultural Exchange - Japan", year: "2016", description: "Selected for a two-week cultural exchange program" },
 ]
+
+function VideoResumeSection() {
+  const [isPlaying, setIsPlaying] = useState(false)
+  const [isMuted, setIsMuted] = useState(false)
+  const [showOverlay, setShowOverlay] = useState(true)
+  const [progress, setProgress] = useState(0)
+  const [currentTime, setCurrentTime] = useState(0)
+  const [duration, setDuration] = useState(0)
+  const [isLoaded, setIsLoaded] = useState(false)
+  const videoRef = useRef<HTMLVideoElement>(null)
+
+  const formatTime = (time: number) => {
+    const minutes = Math.floor(time / 60)
+    const seconds = Math.floor(time % 60)
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`
+  }
+
+  const handlePlayPause = () => {
+    if (videoRef.current) {
+      if (isPlaying) {
+        videoRef.current.pause()
+      } else {
+        videoRef.current.play()
+        setShowOverlay(false)
+      }
+      setIsPlaying(!isPlaying)
+    }
+  }
+
+  const handleVideoClick = () => {
+    if (showOverlay) {
+      handlePlayPause()
+    } else {
+      handlePlayPause()
+    }
+  }
+
+  const handleTimeUpdate = () => {
+    if (videoRef.current) {
+      const current = videoRef.current.currentTime
+      const dur = videoRef.current.duration
+      setCurrentTime(current)
+      setProgress((current / dur) * 100)
+    }
+  }
+
+  const handleLoadedMetadata = () => {
+    if (videoRef.current) {
+      setDuration(videoRef.current.duration)
+      setIsLoaded(true)
+    }
+  }
+
+  const handleProgressClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (videoRef.current) {
+      const rect = e.currentTarget.getBoundingClientRect()
+      const clickX = e.clientX - rect.left
+      const newProgress = (clickX / rect.width) * 100
+      const newTime = (newProgress / 100) * videoRef.current.duration
+      videoRef.current.currentTime = newTime
+      setProgress(newProgress)
+    }
+  }
+
+  const handleMuteToggle = () => {
+    if (videoRef.current) {
+      videoRef.current.muted = !isMuted
+      setIsMuted(!isMuted)
+    }
+  }
+
+  const handleFullscreen = () => {
+    if (videoRef.current) {
+      if (videoRef.current.requestFullscreen) {
+        videoRef.current.requestFullscreen()
+      }
+    }
+  }
+
+  const handleRestart = () => {
+    if (videoRef.current) {
+      videoRef.current.currentTime = 0
+      setProgress(0)
+      setCurrentTime(0)
+      if (!isPlaying) {
+        videoRef.current.play()
+        setIsPlaying(true)
+        setShowOverlay(false)
+      }
+    }
+  }
+
+  const handleVideoEnd = () => {
+    setIsPlaying(false)
+    setShowOverlay(true)
+  }
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.6, delay: 0.2 }}
+      className="mt-20"
+    >
+      {/* Animated Heading */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6 }}
+        className="text-center mb-10"
+      >
+        <motion.div
+          className="inline-flex items-center gap-3 mb-4"
+          animate={{ y: [0, -5, 0] }}
+          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+        >
+          <div className="p-2.5 rounded-xl bg-primary/10 border border-primary/30">
+            <Video className="w-6 h-6 text-primary" />
+          </div>
+        </motion.div>
+        
+        <h3 className="text-2xl md:text-3xl font-bold mb-3 text-balance">
+          <motion.span
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+          >
+            Get to Know{" "}
+          </motion.span>
+          <motion.span
+            className="text-primary"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+          >
+            Chokdup
+          </motion.span>
+        </h3>
+        <motion.p
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.5 }}
+          className="text-muted-foreground text-sm md:text-base max-w-lg mx-auto"
+        >
+          Watch my video resume to learn more about my journey, skills, and passion for design.
+        </motion.p>
+      </motion.div>
+
+      {/* Video Player Container */}
+      <div className="max-w-4xl mx-auto">
+        <div className="relative group">
+          {/* Animated glow effect */}
+          <motion.div
+            className="absolute -inset-2 md:-inset-3 rounded-3xl opacity-60"
+            style={{
+              background: "linear-gradient(135deg, rgba(0, 102, 255, 0.3) 0%, rgba(0, 102, 255, 0.1) 50%, rgba(0, 102, 255, 0.25) 100%)",
+              filter: "blur(20px)",
+            }}
+            animate={{
+              opacity: [0.4, 0.7, 0.4],
+              scale: [1, 1.02, 1],
+            }}
+            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+          />
+          
+          {/* Floating particles around video */}
+          <div className="absolute -inset-8 pointer-events-none overflow-hidden">
+            {[...Array(8)].map((_, i) => (
+              <motion.div
+                key={i}
+                className="absolute w-1.5 h-1.5 bg-primary/50 rounded-full"
+                style={{
+                  left: `${10 + (i * 12)}%`,
+                  top: i % 2 === 0 ? '-5%' : '105%',
+                }}
+                animate={{
+                  y: i % 2 === 0 ? [0, 20, 0] : [0, -20, 0],
+                  opacity: [0.3, 0.8, 0.3],
+                  scale: [0.8, 1.2, 0.8],
+                }}
+                transition={{
+                  duration: 3 + i * 0.3,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: i * 0.2,
+                }}
+              />
+            ))}
+          </div>
+
+          {/* Main video container */}
+          <div className="relative bg-card/90 backdrop-blur-md rounded-2xl md:rounded-3xl border-2 border-primary/40 overflow-hidden shadow-2xl shadow-primary/20">
+            {/* Video wrapper with aspect ratio */}
+            <div 
+              className="relative aspect-video bg-gradient-to-br from-background via-card to-background cursor-pointer"
+              onClick={handleVideoClick}
+            >
+              {/* Loading shimmer effect */}
+              <AnimatePresence>
+                {!isLoaded && (
+                  <motion.div
+                    initial={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="absolute inset-0 bg-gradient-to-r from-card via-muted to-card animate-pulse"
+                  />
+                )}
+              </AnimatePresence>
+
+              {/* The actual video */}
+              <video
+                ref={videoRef}
+                className="absolute inset-0 w-full h-full object-cover"
+                onTimeUpdate={handleTimeUpdate}
+                onLoadedMetadata={handleLoadedMetadata}
+                onEnded={handleVideoEnd}
+                playsInline
+                preload="metadata"
+              >
+                <source src="/videos/chokdup-video-resume.mp4" type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+
+              {/* Play button overlay */}
+              <AnimatePresence>
+                {showOverlay && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="absolute inset-0 flex flex-col items-center justify-center bg-background/60 backdrop-blur-sm"
+                  >
+                    {/* Animated rings */}
+                    <div className="absolute inset-0 flex items-center justify-center overflow-hidden pointer-events-none">
+                      {[...Array(3)].map((_, i) => (
+                        <motion.div
+                          key={i}
+                          className="absolute rounded-full border border-primary/20"
+                          style={{
+                            width: `${120 + i * 60}px`,
+                            height: `${120 + i * 60}px`,
+                          }}
+                          animate={{
+                            scale: [1, 1.15, 1],
+                            opacity: [0.2, 0.4, 0.2],
+                          }}
+                          transition={{
+                            duration: 2.5 + i * 0.5,
+                            repeat: Infinity,
+                            ease: "easeInOut",
+                            delay: i * 0.3,
+                          }}
+                        />
+                      ))}
+                    </div>
+
+                    {/* Play button */}
+                    <motion.button
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.95 }}
+                      className="relative z-10 group/play"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        handlePlayPause()
+                      }}
+                    >
+                      {/* Button glow */}
+                      <motion.div
+                        className="absolute inset-0 bg-primary/30 rounded-full blur-xl"
+                        animate={{
+                          scale: [1, 1.3, 1],
+                          opacity: [0.5, 0.8, 0.5],
+                        }}
+                        transition={{ duration: 2, repeat: Infinity }}
+                      />
+                      
+                      {/* Button background */}
+                      <div className="relative w-20 h-20 md:w-24 md:h-24 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center border-2 border-primary-foreground/20 shadow-lg shadow-primary/40 group-hover/play:shadow-primary/60 transition-shadow">
+                        <Play className="w-8 h-8 md:w-10 md:h-10 text-primary-foreground ml-1" fill="currentColor" />
+                      </div>
+                    </motion.button>
+
+                    {/* Watch label */}
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.2 }}
+                      className="mt-6 px-5 py-2 rounded-full bg-card/80 backdrop-blur-sm border border-primary/30"
+                    >
+                      <span className="text-sm font-medium text-foreground">Watch Video Resume</span>
+                    </motion.div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* Hover controls overlay (when video is playing) */}
+              <AnimatePresence>
+                {!showOverlay && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-t from-background/60 via-transparent to-transparent"
+                  >
+                    <motion.button
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        handlePlayPause()
+                      }}
+                      className="w-16 h-16 rounded-full bg-card/90 backdrop-blur-sm border border-primary/40 flex items-center justify-center shadow-lg"
+                    >
+                      {isPlaying ? (
+                        <Pause className="w-7 h-7 text-primary" fill="currentColor" />
+                      ) : (
+                        <Play className="w-7 h-7 text-primary ml-1" fill="currentColor" />
+                      )}
+                    </motion.button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* Corner accents */}
+              <div className="absolute top-3 left-3 md:top-4 md:left-4 w-6 h-6 md:w-8 md:h-8 border-l-2 border-t-2 border-primary/40 rounded-tl-lg pointer-events-none" />
+              <div className="absolute top-3 right-3 md:top-4 md:right-4 w-6 h-6 md:w-8 md:h-8 border-r-2 border-t-2 border-primary/40 rounded-tr-lg pointer-events-none" />
+              <div className="absolute bottom-12 left-3 md:bottom-14 md:left-4 w-6 h-6 md:w-8 md:h-8 border-l-2 border-b-2 border-primary/40 rounded-bl-lg pointer-events-none" />
+              <div className="absolute bottom-12 right-3 md:bottom-14 md:right-4 w-6 h-6 md:w-8 md:h-8 border-r-2 border-b-2 border-primary/40 rounded-br-lg pointer-events-none" />
+            </div>
+
+            {/* Video controls bar */}
+            <div className="px-3 md:px-5 py-3 md:py-4 bg-card/80 backdrop-blur-sm border-t border-border/50 flex items-center gap-3 md:gap-4">
+              {/* Play/Pause button */}
+              <button
+                onClick={handlePlayPause}
+                className="p-2 rounded-lg bg-primary/10 hover:bg-primary/20 border border-primary/30 transition-colors"
+              >
+                {isPlaying ? (
+                  <Pause className="w-4 h-4 text-primary" />
+                ) : (
+                  <Play className="w-4 h-4 text-primary ml-0.5" />
+                )}
+              </button>
+
+              {/* Progress bar */}
+              <div 
+                className="flex-1 h-1.5 md:h-2 rounded-full bg-muted cursor-pointer overflow-hidden group/progress"
+                onClick={handleProgressClick}
+              >
+                <motion.div
+                  className="h-full bg-gradient-to-r from-primary to-primary/80 rounded-full relative"
+                  style={{ width: `${progress}%` }}
+                >
+                  {/* Progress handle */}
+                  <div className="absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-primary border-2 border-primary-foreground shadow-md opacity-0 group-hover/progress:opacity-100 transition-opacity" />
+                </motion.div>
+              </div>
+
+              {/* Time display */}
+              <span className="text-xs md:text-sm text-muted-foreground font-mono min-w-[80px] md:min-w-[90px] text-right">
+                {formatTime(currentTime)} / {formatTime(duration)}
+              </span>
+
+              {/* Control buttons */}
+              <div className="hidden sm:flex items-center gap-2">
+                {/* Restart */}
+                <button
+                  onClick={handleRestart}
+                  className="p-2 rounded-lg hover:bg-muted transition-colors"
+                  title="Restart"
+                >
+                  <RotateCcw className="w-4 h-4 text-muted-foreground hover:text-foreground" />
+                </button>
+
+                {/* Mute/Unmute */}
+                <button
+                  onClick={handleMuteToggle}
+                  className="p-2 rounded-lg hover:bg-muted transition-colors"
+                  title={isMuted ? "Unmute" : "Mute"}
+                >
+                  {isMuted ? (
+                    <VolumeX className="w-4 h-4 text-muted-foreground hover:text-foreground" />
+                  ) : (
+                    <Volume2 className="w-4 h-4 text-muted-foreground hover:text-foreground" />
+                  )}
+                </button>
+
+                {/* Fullscreen */}
+                <button
+                  onClick={handleFullscreen}
+                  className="p-2 rounded-lg hover:bg-muted transition-colors"
+                  title="Fullscreen"
+                >
+                  <Maximize className="w-4 h-4 text-muted-foreground hover:text-foreground" />
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Decorative elements below video */}
+          <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-3/4 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
+        </div>
+      </div>
+    </motion.div>
+  )
+}
 
 export function ResumeSection() {
   const handleDownloadCV = () => {
@@ -252,111 +664,7 @@ export function ResumeSection() {
         </div>
 
         {/* Video Resume Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="mt-16"
-        >
-          <div className="flex items-center gap-3 mb-8 justify-center">
-            <div className="p-2 rounded-lg bg-primary/10">
-              <Video className="w-5 h-5 text-primary" />
-            </div>
-            <h3 className="text-2xl font-bold">Video Resume</h3>
-          </div>
-
-          <div className="max-w-3xl mx-auto">
-            {/* Video Player Container */}
-            <div className="relative group">
-              {/* Glow effect */}
-              <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 via-primary/10 to-primary/20 rounded-2xl blur-xl opacity-60 group-hover:opacity-80 transition-opacity" />
-              
-              {/* Video frame */}
-              <div className="relative bg-card/80 backdrop-blur-sm rounded-2xl border-2 border-primary/30 overflow-hidden">
-                {/* Aspect ratio container for 16:9 video */}
-                <div className="relative aspect-video bg-gradient-to-br from-background via-card to-background">
-                  {/* Subtle pattern overlay */}
-                  <div className="absolute inset-0 opacity-5">
-                    <div className="absolute inset-0" style={{
-                      backgroundImage: `radial-gradient(circle at 1px 1px, currentColor 1px, transparent 0)`,
-                      backgroundSize: '24px 24px'
-                    }} />
-                  </div>
-
-                  {/* Animated rings background */}
-                  <div className="absolute inset-0 flex items-center justify-center overflow-hidden">
-                    {[...Array(3)].map((_, i) => (
-                      <motion.div
-                        key={i}
-                        className="absolute rounded-full border border-primary/10"
-                        style={{
-                          width: `${150 + i * 80}px`,
-                          height: `${150 + i * 80}px`,
-                        }}
-                        animate={{
-                          scale: [1, 1.1, 1],
-                          opacity: [0.3, 0.5, 0.3],
-                        }}
-                        transition={{
-                          duration: 3 + i,
-                          repeat: Infinity,
-                          ease: "easeInOut",
-                          delay: i * 0.5,
-                        }}
-                      />
-                    ))}
-                  </div>
-
-                  {/* Center content */}
-                  <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    {/* Play button */}
-                    <motion.div
-                      whileHover={{ scale: 1.05 }}
-                      className="relative mb-6"
-                    >
-                      <div className="absolute inset-0 bg-primary/20 rounded-full blur-xl" />
-                      <div className="relative w-20 h-20 rounded-full bg-primary/10 border-2 border-primary/40 flex items-center justify-center cursor-not-allowed">
-                        <Play className="w-8 h-8 text-primary ml-1" />
-                      </div>
-                    </motion.div>
-
-                    {/* Coming Soon badge */}
-                    <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: 0.3 }}
-                      className="px-4 py-2 rounded-full bg-primary/10 border border-primary/30 mb-4"
-                    >
-                      <span className="text-sm font-medium text-primary">Coming Soon</span>
-                    </motion.div>
-
-                    {/* Description */}
-                    <p className="text-muted-foreground text-sm text-center max-w-md px-6">
-                      A short introduction video will be available here soon.
-                    </p>
-                  </div>
-
-                  {/* Corner accents */}
-                  <div className="absolute top-4 left-4 w-8 h-8 border-l-2 border-t-2 border-primary/30 rounded-tl-lg" />
-                  <div className="absolute top-4 right-4 w-8 h-8 border-r-2 border-t-2 border-primary/30 rounded-tr-lg" />
-                  <div className="absolute bottom-4 left-4 w-8 h-8 border-l-2 border-b-2 border-primary/30 rounded-bl-lg" />
-                  <div className="absolute bottom-4 right-4 w-8 h-8 border-r-2 border-b-2 border-primary/30 rounded-br-lg" />
-                </div>
-
-                {/* Video controls bar (decorative) */}
-                <div className="px-4 py-3 bg-card/60 border-t border-border/50 flex items-center gap-4">
-                  <div className="w-3 h-3 rounded-full bg-primary/40" />
-                  <div className="flex-1 h-1 rounded-full bg-muted overflow-hidden">
-                    <div className="w-0 h-full bg-primary/50 rounded-full" />
-                  </div>
-                  <span className="text-xs text-muted-foreground font-mono">0:00 / --:--</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </motion.div>
+        <VideoResumeSection />
       </div>
     </section>
   )
