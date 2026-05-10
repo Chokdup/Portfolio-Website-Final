@@ -1134,7 +1134,7 @@ export function ServicesSection() {
 
     const interval = setInterval(() => {
       setActiveIndex((prev) => (prev + 1) % expertiseAreas.length)
-    }, 6000)
+    }, 7000)
 
     return () => clearInterval(interval)
   }, [isInView])
@@ -1214,11 +1214,11 @@ export function ServicesSection() {
             Strategic UX Solutions
           </motion.span>
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-balance">
-            What Do I Help{" "}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-cyan-400 to-primary">
-              Startups
-            </span>{" "}
-            Improve?
+                What Do I Help{" "}
+                <span className="text-primary">
+                  Startups
+                </span>{" "}
+                Improve?
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto text-pretty">
             I transform complex UI/UX challenges into intuitive, high-performing digital experiences 
