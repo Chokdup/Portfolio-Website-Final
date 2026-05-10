@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import {
   Users,
@@ -19,6 +19,8 @@ import {
   ArrowUpRight,
   CheckCircle2,
   Activity,
+  Play,
+  Pause,
 } from "lucide-react"
 
 const services = [
@@ -71,6 +73,8 @@ const services = [
     bgGlow: "bg-fuchsia-500/20",
   },
 ]
+
+const AUTO_ROTATE_INTERVAL = 5000 // 5 seconds per category
 
 // Realistic UI Visual Components
 function RetentionVisual() {
@@ -458,14 +462,14 @@ function EngagementVisual() {
         <div className="text-[9px] text-muted-foreground mb-2">Recent Achievements</div>
         <div className="grid grid-cols-4 gap-1.5">
           {[
-            { icon: "🎯", unlocked: true },
-            { icon: "🔥", unlocked: true },
-            { icon: "💎", unlocked: true },
-            { icon: "🚀", unlocked: false },
+            { icon: Target, unlocked: true },
+            { icon: Zap, unlocked: true },
+            { icon: Star, unlocked: true },
+            { icon: ArrowUpRight, unlocked: false },
           ].map((badge, i) => (
             <motion.div
               key={i}
-              className={`aspect-square rounded-lg flex items-center justify-center text-sm ${
+              className={`aspect-square rounded-lg flex items-center justify-center ${
                 badge.unlocked
                   ? "bg-primary/20 border border-primary/30"
                   : "bg-muted/50 border border-border/30 opacity-40"
@@ -474,15 +478,20 @@ function EngagementVisual() {
               animate={{ scale: 1 }}
               transition={{ delay: 0.5 + i * 0.1, type: "spring" }}
             >
-              {badge.icon}
+              <badge.icon className={`w-4 h-4 ${badge.unlocked ? "text-primary" : "text-muted-foreground"}`} />
             </motion.div>
           ))}
         </div>
       </div>
 
       {/* Streak */}
-      <div className="flex items-center gap-2 p-2 bg-gradient-to-r from-orange-500/20 to-amber-500/10 rounded-lg border border-orange-500/20 mt-2">
-        <div className="text-lg">🔥</div>
+      <div className="flex items-center gap-2 p-2 bg-gradient-to-r from-primary/20 to-cyan-500/10 rounded-lg border border-primary/20 mt-2">
+        <motion.div
+          animate={{ scale: [1, 1.2, 1] }}
+          transition={{ duration: 1.5, repeat: Infinity }}
+        >
+          <Zap className="w-4 h-4 text-primary" />
+        </motion.div>
         <div>
           <div className="text-[10px] font-bold">7 Day Streak!</div>
           <div className="text-[8px] text-muted-foreground">Keep it going</div>
@@ -512,12 +521,77 @@ function getServiceVisual(serviceId: string) {
 }
 
 export function ServicesSection() {
-  const [selectedService, setSelectedService] = useState(services[0])
+  const [activeIndex, setActiveIndex] = useState(0)
+  const [isPaused, setIsPaused] = useState(false)
+  const [progress, setProgress] = useState(0)
+  
+  const selectedService = services[activeIndex]
+
+  // Auto-rotate effect
+  useEffect(() => {
+    if (isPaused) {
+      setProgress(0)
+      return
+    }
+
+    const progressInterval = setInterval(() => {
+      setProgress((prev) => {
+        if (prev >= 100) {
+          return 0
+        }
+        return prev + (100 / (AUTO_ROTATE_INTERVAL / 50))
+      })
+    }, 50)
+
+    const rotateInterval = setInterval(() => {
+      setActiveIndex((prev) => (prev + 1) % services.length)
+      setProgress(0)
+    }, AUTO_ROTATE_INTERVAL)
+
+    return () => {
+      clearInterval(progressInterval)
+      clearInterval(rotateInterval)
+    }
+  }, [isPaused])
+
+  const handleServiceClick = useCallback((index: number) => {
+    setActiveIndex(index)
+    setProgress(0)
+    // Don't pause on click - let it continue auto-rotating
+  }, [])
+
+  const togglePause = useCallback(() => {
+    setIsPaused((prev) => !prev)
+    setProgress(0)
+  }, [])
 
   return (
-    <section id="services" className="py-24 lg:py-32 relative">
-      {/* Background glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/5 rounded-full blur-3xl pointer-events-none" />
+    <section id="services" className="py-24 lg:py-32 relative overflow-hidden">
+      {/* Background effects */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-primary/5 rounded-full blur-3xl pointer-events-none" />
+      
+      {/* Floating particles */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {[...Array(6)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute w-1 h-1 bg-primary/30 rounded-full"
+            style={{
+              left: `${15 + i * 15}%`,
+              top: `${20 + (i % 3) * 25}%`,
+            }}
+            animate={{
+              y: [0, -30, 0],
+              opacity: [0.3, 0.6, 0.3],
+            }}
+            transition={{
+              duration: 4 + i * 0.5,
+              repeat: Infinity,
+              delay: i * 0.3,
+            }}
+          />
+        ))}
+      </div>
 
       <div className="container mx-auto px-6 relative z-10">
         {/* Section Header */}
@@ -539,126 +613,288 @@ export function ServicesSection() {
           </p>
         </motion.div>
 
-        <div className="grid lg:grid-cols-[1fr_1.2fr] gap-8 lg:gap-12 items-start">
-          {/* Service Cards - 3x2 Grid */}
+        <div className="grid lg:grid-cols-[1fr_1.4fr] gap-8 lg:gap-12 items-start">
+          {/* Service Cards - Left Side */}
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="grid grid-cols-3 gap-3"
+            className="space-y-3"
           >
+            {/* Pause/Play control */}
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-xs text-muted-foreground uppercase tracking-wider">
+                {isPaused ? "Paused" : "Auto-playing"}
+              </span>
+              <button
+                onClick={togglePause}
+                className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-card/50 border border-border/50 hover:border-primary/30 transition-colors text-sm"
+              >
+                {isPaused ? (
+                  <>
+                    <Play className="w-3 h-3 text-primary" />
+                    <span className="text-xs text-muted-foreground">Play</span>
+                  </>
+                ) : (
+                  <>
+                    <Pause className="w-3 h-3 text-primary" />
+                    <span className="text-xs text-muted-foreground">Pause</span>
+                  </>
+                )}
+              </button>
+            </div>
+
             {services.map((service, index) => (
               <motion.button
                 key={service.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.05 }}
-                onClick={() => setSelectedService(service)}
-                className={`group relative p-3 rounded-xl border transition-all duration-300 text-left ${
-                  selectedService.id === service.id
-                    ? "bg-primary/10 border-primary/50 shadow-lg shadow-primary/10"
-                    : "bg-card/50 border-border/50 hover:border-primary/30 hover:bg-card"
+                onClick={() => handleServiceClick(index)}
+                className={`group relative w-full p-4 rounded-xl border transition-all duration-500 text-left overflow-hidden ${
+                  activeIndex === index
+                    ? "bg-primary/10 border-primary/50"
+                    : "bg-card/30 border-border/30 hover:border-primary/30 hover:bg-card/50"
                 }`}
               >
-                <div className="flex flex-col items-center gap-2 text-center">
-                  <div
-                    className={`p-2.5 rounded-lg transition-colors ${
-                      selectedService.id === service.id
-                        ? "bg-primary/20 text-primary"
-                        : "bg-muted text-muted-foreground group-hover:text-primary"
-                    }`}
-                  >
-                    <service.icon className="w-5 h-5" />
-                  </div>
-                  <span
-                    className={`text-xs font-medium transition-colors leading-tight ${
-                      selectedService.id === service.id
-                        ? "text-foreground"
-                        : "text-muted-foreground group-hover:text-foreground"
-                    }`}
-                  >
-                    {service.title}
-                  </span>
-                </div>
-
-                {/* Active indicator */}
-                {selectedService.id === service.id && (
+                {/* Active glow effect */}
+                {activeIndex === index && (
                   <motion.div
-                    layoutId="activeService"
-                    className="absolute inset-0 rounded-xl border-2 border-primary/50 pointer-events-none"
-                    initial={false}
+                    className="absolute inset-0 bg-gradient-to-r from-primary/10 via-primary/5 to-transparent"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.5 }}
                   />
                 )}
+
+                {/* Progress bar for active item */}
+                {activeIndex === index && !isPaused && (
+                  <motion.div
+                    className="absolute bottom-0 left-0 h-0.5 bg-primary"
+                    style={{ width: `${progress}%` }}
+                    transition={{ duration: 0.05 }}
+                  />
+                )}
+
+                <div className="relative z-10 flex items-center gap-4">
+                  {/* Icon with glow */}
+                  <div className="relative">
+                    <motion.div
+                      className={`p-3 rounded-xl transition-all duration-500 ${
+                        activeIndex === index
+                          ? "bg-primary/20 text-primary shadow-lg shadow-primary/20"
+                          : "bg-muted/50 text-muted-foreground group-hover:text-primary group-hover:bg-muted"
+                      }`}
+                      animate={activeIndex === index ? {
+                        boxShadow: [
+                          "0 0 20px rgba(0,102,255,0.2)",
+                          "0 0 30px rgba(0,102,255,0.3)",
+                          "0 0 20px rgba(0,102,255,0.2)",
+                        ],
+                      } : {}}
+                      transition={{ duration: 2, repeat: Infinity }}
+                    >
+                      <service.icon className="w-5 h-5" />
+                    </motion.div>
+                    
+                    {/* Animated ring for active */}
+                    {activeIndex === index && (
+                      <motion.div
+                        className="absolute -inset-1 rounded-xl border border-primary/30"
+                        animate={{ scale: [1, 1.1, 1], opacity: [0.5, 0.8, 0.5] }}
+                        transition={{ duration: 2, repeat: Infinity }}
+                      />
+                    )}
+                  </div>
+
+                  <div className="flex-1 min-w-0">
+                    <h3
+                      className={`font-semibold transition-colors duration-300 ${
+                        activeIndex === index
+                          ? "text-foreground"
+                          : "text-muted-foreground group-hover:text-foreground"
+                      }`}
+                    >
+                      {service.title}
+                    </h3>
+                    <AnimatePresence mode="wait">
+                      {activeIndex === index && (
+                        <motion.p
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: "auto" }}
+                          exit={{ opacity: 0, height: 0 }}
+                          transition={{ duration: 0.3 }}
+                          className="text-sm text-muted-foreground mt-1 line-clamp-2"
+                        >
+                          {service.description}
+                        </motion.p>
+                      )}
+                    </AnimatePresence>
+                  </div>
+
+                  {/* Active indicator dot */}
+                  <motion.div
+                    className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                      activeIndex === index ? "bg-primary" : "bg-muted"
+                    }`}
+                    animate={activeIndex === index ? {
+                      scale: [1, 1.3, 1],
+                    } : {}}
+                    transition={{ duration: 1.5, repeat: Infinity }}
+                  />
+                </div>
               </motion.button>
             ))}
+
+            {/* Navigation dots */}
+            <div className="flex items-center justify-center gap-2 pt-4">
+              {services.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => handleServiceClick(index)}
+                  className={`relative w-2 h-2 rounded-full transition-all duration-300 ${
+                    activeIndex === index ? "bg-primary w-6" : "bg-muted hover:bg-primary/50"
+                  }`}
+                >
+                  {activeIndex === index && !isPaused && (
+                    <motion.div
+                      className="absolute inset-0 rounded-full bg-primary"
+                      style={{
+                        clipPath: `inset(0 ${100 - progress}% 0 0)`,
+                      }}
+                    />
+                  )}
+                </button>
+              ))}
+            </div>
           </motion.div>
 
-          {/* Service Visual & Description */}
+          {/* Visual Display - Right Side */}
           <motion.div
             initial={{ opacity: 0, x: 30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="space-y-5"
+            className="relative"
+            onMouseEnter={() => setIsPaused(true)}
+            onMouseLeave={() => setIsPaused(false)}
           >
-            {/* Visual Display */}
-            <div className="aspect-[16/10] relative">
+            {/* Visual Container */}
+            <div className="aspect-[16/11] relative">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={selectedService.id}
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  transition={{ duration: 0.4 }}
+                  initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.98, y: -10 }}
+                  transition={{ duration: 0.5, ease: "easeOut" }}
                   className="relative w-full h-full rounded-2xl border border-primary/20 overflow-hidden"
                 >
-                  {/* Gradient background */}
-                  <div className={`absolute inset-0 bg-gradient-to-br ${selectedService.accentColor} opacity-20`} />
+                  {/* Gradient background with animation */}
+                  <motion.div
+                    className={`absolute inset-0 bg-gradient-to-br ${selectedService.accentColor} opacity-20`}
+                    animate={{ opacity: [0.15, 0.25, 0.15] }}
+                    transition={{ duration: 4, repeat: Infinity }}
+                  />
                   
                   {/* Animated grid pattern */}
                   <div className="absolute inset-0 opacity-20">
-                    <div className="absolute inset-0" style={{
-                      backgroundImage: `linear-gradient(rgba(0,102,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(0,102,255,0.1) 1px, transparent 1px)`,
-                      backgroundSize: '20px 20px'
-                    }} />
+                    <motion.div
+                      className="absolute inset-0"
+                      style={{
+                        backgroundImage: `linear-gradient(rgba(0,102,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(0,102,255,0.1) 1px, transparent 1px)`,
+                        backgroundSize: '25px 25px'
+                      }}
+                      animate={{ backgroundPosition: ["0px 0px", "25px 25px"] }}
+                      transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                    />
                   </div>
                   
                   {/* UI Visual Content */}
                   <div className="absolute inset-4">
-                    <div className="w-full h-full bg-background/90 backdrop-blur-sm rounded-xl border border-primary/30 shadow-xl overflow-hidden">
+                    <motion.div
+                      className="w-full h-full bg-background/95 backdrop-blur-sm rounded-xl border border-primary/30 shadow-2xl overflow-hidden"
+                      initial={{ y: 10, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      transition={{ delay: 0.2, duration: 0.4 }}
+                    >
                       {getServiceVisual(selectedService.id)}
-                    </div>
+                    </motion.div>
                   </div>
                   
-                  {/* Glow effect */}
+                  {/* Animated glow effect */}
                   <motion.div
-                    className={`absolute -bottom-20 -right-20 w-40 h-40 ${selectedService.bgGlow} rounded-full blur-3xl`}
-                    animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }}
-                    transition={{ duration: 4, repeat: Infinity }}
+                    className={`absolute -bottom-20 -right-20 w-60 h-60 ${selectedService.bgGlow} rounded-full blur-3xl`}
+                    animate={{ 
+                      scale: [1, 1.3, 1], 
+                      opacity: [0.3, 0.5, 0.3],
+                      x: [0, 20, 0],
+                      y: [0, -20, 0],
+                    }}
+                    transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+                  />
+
+                  <motion.div
+                    className="absolute -top-10 -left-10 w-40 h-40 bg-primary/10 rounded-full blur-3xl"
+                    animate={{ 
+                      scale: [1, 1.2, 1], 
+                      opacity: [0.2, 0.4, 0.2],
+                    }}
+                    transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 1 }}
                   />
                   
-                  {/* Icon badge */}
+                  {/* Icon badge with pulse */}
                   <motion.div
                     className="absolute bottom-4 right-4 p-3 rounded-xl bg-background/80 backdrop-blur-sm border border-primary/30"
+                    animate={{ 
+                      boxShadow: [
+                        "0 0 20px rgba(0,102,255,0.1)",
+                        "0 0 30px rgba(0,102,255,0.2)",
+                        "0 0 20px rgba(0,102,255,0.1)",
+                      ],
+                    }}
+                    transition={{ duration: 2, repeat: Infinity }}
                     whileHover={{ scale: 1.1, rotate: 5 }}
-                    transition={{ duration: 0.3 }}
                   >
                     <selectedService.icon className="w-5 h-5 text-primary" />
                   </motion.div>
                   
-                  {/* Floating accent */}
+                  {/* Floating geometric accents */}
                   <motion.div
-                    className="absolute top-6 right-6 w-10 h-10 rounded-lg bg-primary/10 border border-primary/20 backdrop-blur-sm"
-                    animate={{ y: [0, -6, 0], rotate: [0, 3, 0] }}
-                    transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                    className="absolute top-6 right-6 w-12 h-12 rounded-lg bg-primary/10 border border-primary/20 backdrop-blur-sm"
+                    animate={{ 
+                      y: [0, -8, 0], 
+                      rotate: [0, 5, 0],
+                      scale: [1, 1.05, 1],
+                    }}
+                    transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+                  />
+
+                  <motion.div
+                    className="absolute top-1/3 right-8 w-6 h-6 rounded-full bg-primary/15 border border-primary/20"
+                    animate={{ 
+                      y: [0, 10, 0], 
+                      x: [0, -5, 0],
+                      opacity: [0.5, 0.8, 0.5],
+                    }}
+                    transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+                  />
+
+                  <motion.div
+                    className="absolute bottom-1/4 left-6 w-8 h-8 rounded-lg bg-primary/10 border border-primary/15 rotate-45"
+                    animate={{ 
+                      y: [0, -10, 0], 
+                      rotate: [45, 50, 45],
+                    }}
+                    transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 1 }}
                   />
                 </motion.div>
               </AnimatePresence>
             </div>
 
-            {/* Description */}
+            {/* Service title badge */}
             <AnimatePresence mode="wait">
               <motion.div
                 key={selectedService.id}
@@ -666,11 +902,14 @@ export function ServicesSection() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.3 }}
+                className="mt-6 flex items-center justify-between"
               >
-                <h3 className="text-xl font-bold mb-2">{selectedService.title}</h3>
-                <p className="text-muted-foreground leading-relaxed">
-                  {selectedService.description}
-                </p>
+                <div>
+                  <h3 className="text-xl font-bold mb-1">{selectedService.title}</h3>
+                  <p className="text-muted-foreground text-sm max-w-md">
+                    {selectedService.description}
+                  </p>
+                </div>
               </motion.div>
             </AnimatePresence>
 
@@ -680,9 +919,9 @@ export function ServicesSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.3 }}
-              className="flex flex-wrap gap-3"
+              className="flex flex-wrap gap-3 mt-4"
             >
-              {["User-Centered", "Data-Driven", "Scalable"].map((benefit, i) => (
+              {["User-Centered", "Data-Driven", "Scalable"].map((benefit) => (
                 <span
                   key={benefit}
                   className="flex items-center gap-1.5 text-sm text-muted-foreground"
